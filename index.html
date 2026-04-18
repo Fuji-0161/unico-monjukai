@@ -7,27 +7,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f5f4f0;
+            --bg: #fdf6f8;
             --white: #ffffff;
-            --text: #111111;
-            --text-sub: #444444;
-            --muted: #666666;
-            --border: #d0cfc8;
-            --accent: #3a28d4;
-            --accent-bg: #ede9ff;
-            --pink: #b0003a;
-            --pink-bg: #fde8ef;
-            --green: #005c3a;
-            --green-bg: #d6f5e8;
-            --gold: #6b4200;
-            --gold-bg: #fff3cc;
-            --gold-border: #d4a800;
+            --text: #3d3654;
+            --text-sub: #5a527a;
+            --muted: #8e87a5;
+            --border: #ece3f0;
+            --accent: #7c9ee3;
+            --accent-bg: #e8f1ff;
+            --pink: #d96a8a;
+            --pink-bg: #ffe6ec;
+            --green: #5cb89a;
+            --green-bg: #dcf5ea;
+            --gold: #c59a30;
+            --gold-bg: #fff3d0;
+            --gold-border: #ecc96a;
+            --shadow-sm: 0 2px 8px rgba(140, 110, 160, 0.08);
+            --shadow-md: 0 6px 20px rgba(140, 110, 160, 0.12);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: var(--bg);
+            background: linear-gradient(135deg, #fde4ec 0%, #f3e8ff 45%, #e4edff 100%);
+            background-attachment: fixed;
             color: var(--text);
             font-family: 'Noto Sans JP', sans-serif;
             min-height: 100vh;
@@ -42,11 +45,23 @@
 
         .header {
             background: var(--white);
-            border: 2px solid var(--text);
-            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 24px;
             padding: 40px;
             margin-bottom: 24px;
             text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-icon {
+            display: block;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 4px 24px rgba(216, 180, 220, 0.35);
+            border: 3px solid var(--white);
         }
 
         .header-badge {
@@ -57,9 +72,9 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             color: var(--white);
-            background: var(--text);
+            background: var(--accent);
             padding: 5px 14px;
-            border-radius: 3px;
+            border-radius: 999px;
             margin-bottom: 18px;
         }
 
@@ -67,14 +82,15 @@
             font-size: clamp(1.8rem, 4vw, 2.8rem);
             font-weight: 900;
             color: var(--text);
-            line-height: 1.25;
+            line-height: 1.3;
             margin-bottom: 10px;
+            letter-spacing: 1px;
         }
 
         .monju-subtitle {
             font-size: 15px;
             font-weight: 700;
-            color: var(--accent);
+            color: var(--pink);
             letter-spacing: 4px;
             margin-top: 6px;
             margin-bottom: 10px;
@@ -89,11 +105,12 @@
 
         /* Event banner */
         .event-banner {
-            background: var(--gold-bg);
-            border: 2px solid var(--gold-border);
-            border-radius: 12px;
+            background: linear-gradient(135deg, #fff3d0 0%, #ffe8ec 100%);
+            border: 1.5px solid var(--gold-border);
+            border-radius: 20px;
             padding: 32px 36px;
             margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
         }
 
         .event-banner-tag {
@@ -104,8 +121,8 @@
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 2px;
-            padding: 3px 10px;
-            border-radius: 2px;
+            padding: 4px 12px;
+            border-radius: 999px;
             margin-bottom: 14px;
             text-transform: uppercase;
         }
@@ -143,7 +160,7 @@
             font-size: 13px;
             font-weight: 700;
             padding: 7px 16px;
-            border-radius: 4px;
+            border-radius: 999px;
             margin-bottom: 20px;
         }
 
@@ -151,26 +168,28 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: var(--text);
+            background: var(--accent);
             color: var(--white);
             text-decoration: none;
             font-family: 'DM Mono', monospace;
             font-size: 12px;
             font-weight: 600;
             letter-spacing: 1px;
-            padding: 11px 22px;
-            border-radius: 6px;
-            transition: opacity 0.15s, transform 0.15s;
+            padding: 12px 24px;
+            border-radius: 999px;
+            transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 12px rgba(124, 158, 227, 0.35);
         }
-        .btn-link:hover { opacity: 0.75; transform: translateY(-1px); }
+        .btn-link:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(124, 158, 227, 0.45); }
 
         /* Section */
         .section {
             background: var(--white);
             border: 1.5px solid var(--border);
-            border-radius: 12px;
+            border-radius: 20px;
             padding: 28px 32px;
             margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
         }
 
         .section-header {
@@ -179,7 +198,7 @@
             gap: 12px;
             margin-bottom: 16px;
             padding-bottom: 14px;
-            border-bottom: 1.5px solid var(--border);
+            border-bottom: 1.5px dashed var(--border);
         }
 
         .section-num {
@@ -188,9 +207,9 @@
             font-weight: 700;
             letter-spacing: 1px;
             color: var(--white);
-            background: var(--text);
-            padding: 3px 9px;
-            border-radius: 3px;
+            background: var(--accent);
+            padding: 4px 10px;
+            border-radius: 999px;
             flex-shrink: 0;
         }
 
@@ -206,7 +225,7 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            border-radius: 8px;
+            border-radius: 16px;
             padding: 16px 20px;
             text-decoration: none;
             color: inherit;
@@ -215,12 +234,12 @@
         }
         .link-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+            box-shadow: var(--shadow-md);
         }
 
-        .link-card.purple { background: var(--accent-bg); border-color: #b5aaff; }
-        .link-card.pink   { background: var(--pink-bg);   border-color: #f5aac4; }
-        .link-card.green  { background: var(--green-bg);  border-color: #7dddb8; }
+        .link-card.purple { background: var(--accent-bg); border-color: #c7d7f3; }
+        .link-card.pink   { background: var(--pink-bg);   border-color: #f5c6d3; }
+        .link-card.green  { background: var(--green-bg);  border-color: #a8e0cb; }
         .link-card.gold   { background: var(--gold-bg);   border-color: var(--gold-border); }
 
         .link-icon { font-size: 22px; flex-shrink: 0; }
@@ -260,13 +279,13 @@
             font-family: 'DM Mono', monospace;
             font-size: 10px;
             font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 3px;
+            padding: 3px 10px;
+            border-radius: 999px;
         }
-        .tag-purple { background: #d4ccff; color: #2a1ab0; }
-        .tag-pink   { background: #fbbfd3; color: #8a002d; }
-        .tag-green  { background: #9fe8cc; color: #003f28; }
-        .tag-gold   { background: #ffe080; color: #5a3600; }
+        .tag-purple { background: #d4e0f7; color: #3a5c9e; }
+        .tag-pink   { background: #fbc8d6; color: #9c3d5c; }
+        .tag-green  { background: #b4e5d2; color: #2d6b55; }
+        .tag-gold   { background: #ffe8a8; color: #8a6620; }
 
         .link-arrow {
             font-size: 18px;
@@ -283,7 +302,7 @@
             color: var(--muted);
             margin-top: 36px;
             padding-top: 24px;
-            border-top: 1.5px solid var(--border);
+            border-top: 1.5px dashed var(--border);
             letter-spacing: 1px;
             line-height: 2;
         }
@@ -291,6 +310,7 @@
         @media (max-width: 600px) {
             .container { padding: 24px 14px; }
             .header { padding: 28px 20px; }
+            .header-icon { width: 128px; height: 128px; }
             .section { padding: 20px 16px; }
             .event-banner { padding: 22px 18px; }
         }
@@ -300,6 +320,7 @@
 <div class="container">
 
     <div class="header">
+        <img src="./assets/group-icon.png" alt="文殊の会グループアイコン" class="header-icon" onerror="this.style.display='none'">
         <div class="header-badge">Claude Code × AI スクール</div>
         <h1>ユニコスクール<br>公式リソース一覧</h1>
         <p class="monju-subtitle">― 文殊の会 メンバー専用ページ ―</p>
