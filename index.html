@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ユニコスクール 公式リソース一覧</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f4f0;
+            --white: #ffffff;
+            --text: #111111;
+            --text-sub: #444444;
+            --muted: #666666;
+            --border: #d0cfc8;
+            --accent: #3a28d4;
+            --accent-bg: #ede9ff;
+            --pink: #b0003a;
+            --pink-bg: #fde8ef;
+            --green: #005c3a;
+            --green-bg: #d6f5e8;
+            --gold: #6b4200;
+            --gold-bg: #fff3cc;
+            --gold-border: #d4a800;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Noto Sans JP', sans-serif;
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 56px 32px;
+        }
+
+        .header {
+            background: var(--white);
+            border: 2px solid var(--text);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .header-badge {
+            display: inline-block;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--white);
+            background: var(--text);
+            padding: 5px 14px;
+            border-radius: 3px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 900;
+            color: var(--text);
+            line-height: 1.25;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 2px;
+        }
+
+        /* Event banner */
+        .event-banner {
+            background: var(--gold-bg);
+            border: 2px solid var(--gold-border);
+            border-radius: 12px;
+            padding: 32px 36px;
+            margin-bottom: 24px;
+        }
+
+        .event-banner-tag {
+            display: inline-block;
+            background: var(--gold-border);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 3px 10px;
+            border-radius: 2px;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+        }
+
+        .event-date {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 8px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .event-title {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--text);
+            margin-bottom: 12px;
+            line-height: 1.55;
+        }
+
+        .event-desc {
+            font-size: 13.5px;
+            color: var(--text-sub);
+            margin-bottom: 16px;
+            line-height: 1.85;
+        }
+
+        .event-guest {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--white);
+            border: 1.5px solid var(--gold-border);
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 700;
+            padding: 7px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--text);
+            color: var(--white);
+            text-decoration: none;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 11px 22px;
+            border-radius: 6px;
+            transition: opacity 0.15s, transform 0.15s;
+        }
+        .btn-link:hover { opacity: 0.75; transform: translateY(-1px); }
+
+        /* Section */
+        .section {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 28px 32px;
+            margin-bottom: 16px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .section-num {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--white);
+            background: var(--text);
+            padding: 3px 9px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .link-grid { display: grid; gap: 10px; }
+
+        .link-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-radius: 8px;
+            padding: 16px 20px;
+            text-decoration: none;
+            color: inherit;
+            border: 1.5px solid transparent;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .link-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+        }
+
+        .link-card.purple { background: var(--accent-bg); border-color: #b5aaff; }
+        .link-card.pink   { background: var(--pink-bg);   border-color: #f5aac4; }
+        .link-card.green  { background: var(--green-bg);  border-color: #7dddb8; }
+        .link-card.gold   { background: var(--gold-bg);   border-color: var(--gold-border); }
+
+        .link-icon { font-size: 22px; flex-shrink: 0; }
+
+        .link-content { flex: 1; min-width: 0; }
+
+        .link-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        .purple .link-label { color: var(--accent); }
+        .pink   .link-label { color: var(--pink); }
+        .green  .link-label { color: var(--green); }
+        .gold   .link-label { color: var(--gold); }
+
+        .link-name {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 3px;
+        }
+
+        .link-url {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
+            word-break: break-all;
+        }
+
+        .tags { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 5px; }
+
+        .tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+        .tag-purple { background: #d4ccff; color: #2a1ab0; }
+        .tag-pink   { background: #fbbfd3; color: #8a002d; }
+        .tag-green  { background: #9fe8cc; color: #003f28; }
+        .tag-gold   { background: #ffe080; color: #5a3600; }
+
+        .link-arrow {
+            font-size: 18px;
+            color: var(--muted);
+            flex-shrink: 0;
+            transition: color 0.15s, transform 0.15s;
+        }
+        .link-card:hover .link-arrow { color: var(--text); transform: translateX(3px); }
+
+        .footer {
+            text-align: center;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 36px;
+            padding-top: 24px;
+            border-top: 1.5px solid var(--border);
+            letter-spacing: 1px;
+            line-height: 2;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 24px 14px; }
+            .header { padding: 28px 20px; }
+            .section { padding: 20px 16px; }
+            .event-banner { padding: 22px 18px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <div class="header-badge">Claude Code × AI スクール</div>
+        <h1>ユニコスクール<br>公式リソース一覧</h1>
+        <p class="subtitle">Official Resource Guide — 2025</p>
+    </div>
+
+    <div class="event-banner">
+        <div class="event-banner-tag">★ 特別イベント</div>
+        <div class="event-date">📅 2025年 4月19日（日）開催</div>
+        <div class="event-title">特別セミナー（無料）<br>ClaudeCode × マネーフォワード &amp; freee<br>MCP 上級者向けセミナー</div>
+        <div class="event-guest">👤 特別ゲスト：AI税理士・畠山謙人</div>
+        <div class="event-desc">
+            Claude Code専門AIスクール「ユニコスクール」主催の無料セミナー。<br>
+            ClaudeCode と MCP（Model Context Protocol）を使った会計ツール連携を学ぶ上級者向けイベント。
+        </div>
+        <a href="https://peatix.com/event/4964295" target="_blank" class="btn-link">
+            🎟 Peatix で申し込む →
+        </a>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">① 公式</span>
+            <span class="section-title">ユニコスクール公式サイト ＆ X（Twitter）</span>
+        </div>
+        <div class="link-grid">
+            <a href="https://unikoukokun.com/" target="_blank" class="link-card purple">
+                <div class="link-icon">🏫</div>
+                <div class="link-content">
+                    <div class="link-label">Official Website</div>
+                    <div class="link-name">ユニコスクール 公式サイト</div>
+                    <div class="link-url">https://unikoukokun.com/</div>
+                    <div class="tags">
+                        <span class="tag tag-purple">Claude Code専門</span>
+                        <span class="tag tag-purple">AIスクール</span>
+                    </div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+            <a href="https://www.one-tab.com/page/q9ZnhrNeTQGs6YfFIGdbTw" target="_blank" class="link-card purple">
+                <div class="link-icon">🐦</div>
+                <div class="link-content">
+                    <div class="link-label">SNS リンク集</div>
+                    <div class="link-name">公式 X（Twitter）＆ 関連リンク</div>
+                    <div class="link-url">https://www.one-tab.com/page/q9ZnhrNeTQGs6YfFIGdbTw</div>
+                    <div class="tags">
+                        <span class="tag tag-purple">X / Twitter</span>
+                        <span class="tag tag-purple">公式告知</span>
+                    </div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">② note</span>
+            <span class="section-title">自己紹介 ＆ Voicy（音声コンテンツ）</span>
+        </div>
+        <div class="link-grid">
+            <a href="https://www.one-tab.com/page/-WvYSB2jSpGC-A5uzmXj-g" target="_blank" class="link-card pink">
+                <div class="link-icon">📝</div>
+                <div class="link-content">
+                    <div class="link-label">note.com</div>
+                    <div class="link-name">ユニコ 自己紹介 ＆ Voicy リンク集</div>
+                    <div class="link-url">https://www.one-tab.com/page/-WvYSB2jSpGC-A5uzmXj-g</div>
+                    <div class="tags">
+                        <span class="tag tag-pink">note.com</span>
+                        <span class="tag tag-pink">Voicy 音声配信</span>
+                        <span class="tag tag-pink">自己紹介</span>
+                    </div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">③ 配信</span>
+            <span class="section-title">生配信（一部）＆ コラボセミナー例</span>
+        </div>
+        <div class="link-grid">
+            <a href="https://www.one-tab.com/page/al17q8S1R4CBjuBHii9siA" target="_blank" class="link-card green">
+                <div class="link-icon">🎥</div>
+                <div class="link-content">
+                    <div class="link-label">Live Streams &amp; Seminars</div>
+                    <div class="link-name">生配信アーカイブ ＆ コラボセミナー例</div>
+                    <div class="link-url">https://www.one-tab.com/page/al17q8S1R4CBjuBHii9siA</div>
+                    <div class="tags">
+                        <span class="tag tag-green">生配信</span>
+                        <span class="tag tag-green">コラボ</span>
+                        <span class="tag tag-green">セミナーアーカイブ</span>
+                    </div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">④ イベント</span>
+            <span class="section-title">4/19（日）特別セミナー 申込ページ</span>
+        </div>
+        <div class="link-grid">
+            <a href="https://peatix.com/event/4964295" target="_blank" class="link-card gold">
+                <div class="link-icon">🎟</div>
+                <div class="link-content">
+                    <div class="link-label">Peatix イベント申込</div>
+                    <div class="link-name">ClaudeCode × MCP 上級者向け特別セミナー（無料）</div>
+                    <div class="link-url">https://peatix.com/event/4964295</div>
+                    <div class="tags">
+                        <span class="tag tag-gold">無料</span>
+                        <span class="tag tag-gold">上級者向け</span>
+                        <span class="tag tag-gold">4/19 開催</span>
+                    </div>
+                </div>
+                <div class="link-arrow">→</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>ユニコスクール 公式リソースガイド</p>
+        <p>Claude Code 専門 AI スクール — #ユニコスクール</p>
+    </div>
+
+</div>
+</body>
+</html>
