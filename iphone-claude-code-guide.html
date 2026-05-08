@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iPhone × Claude Code × GitHub Pages 完全ガイド</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --navy:   #1e3a5f;
+    --blue:   #2563eb;
+    --lblue:  #dbeafe;
+    --white:  #ffffff;
+    --off:    #f8fafc;
+    --gray:   #64748b;
+    --lgray:  #f1f5f9;
+    --black:  #1e293b;
+    --green:  #16a34a;
+    --lgreen: #dcfce7;
+    --amber:  #d97706;
+    --lamber: #fef3c7;
+    --red:    #dc2626;
+    --lred:   #fee2e2;
+    --purple: #7c3aed;
+    --lpurple:#ede9fe;
+    --orange: #ea580c;
+    --lorange:#ffedd5;
+    --border: #e2e8f0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--off);
+    color: var(--black);
+    line-height: 1.7;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 0 80px;
+  }
+
+  /* ──── HOME LINK ──── */
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 16px 20px 0;
+    padding: 8px 14px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .home-link:hover { background: var(--lblue); }
+
+  /* ──── HERO ──── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #2d5285 50%, #5b21b6 100%);
+    color: var(--white);
+    padding: 56px 24px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(124,58,237,0.5) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -80px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(37,99,235,0.4) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-icon-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 30px;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-icon-x {
+    color: #c4b5fd;
+    font-size: 22px;
+    margin: 0 2px;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: linear-gradient(90deg, var(--purple), var(--blue));
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 5px 12px;
+    border-radius: 3px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-sub {
+    font-size: 14px;
+    color: #c4b5fd;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-pill {
+    background: rgba(22,45,74,0.8);
+    border: 1.5px solid var(--blue);
+    color: #93c5fd;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+  .hero-pill.purple-pill {
+    border-color: var(--purple);
+    color: #c4b5fd;
+  }
+
+  /* ──── QUICK LINKS ──── */
+  .quicklinks { padding: 24px 20px 0; }
+  .quicklinks-title {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--gray);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  .qlink-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .qlink {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-decoration: none;
+    color: var(--black);
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  }
+  .qlink:active { transform: scale(0.97); }
+  .qlink:hover { border-color: var(--blue); box-shadow: 0 4px 12px rgba(37,99,235,0.15); }
+  .qlink.purple-q:hover { border-color: var(--purple); box-shadow: 0 4px 12px rgba(124,58,237,0.15); }
+  .qlink-icon { font-size: 22px; flex-shrink: 0; }
+  .qlink-content { flex: 1; min-width: 0; }
+  .qlink-label {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    color: var(--gray);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 1px;
+  }
+  .qlink-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.3;
+  }
+  .qlink-arrow { color: var(--gray); font-size: 14px; }
+
+  /* ──── SECTION ──── */
+  .section {
+    padding: 36px 20px 12px;
+    scroll-margin-top: 20px;
+  }
+  .section-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--blue);
+    background: var(--lblue);
+    padding: 4px 10px;
+    border-radius: 3px;
+    margin-bottom: 10px;
+  }
+  .section-tag.purple-tag { color: var(--purple); background: var(--lpurple); }
+  .section-tag.green-tag  { color: var(--green);  background: var(--lgreen); }
+  .section-tag.red-tag    { color: var(--red);    background: var(--lred); }
+  .section-tag.orange-tag { color: var(--orange); background: var(--lorange); }
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .section-desc {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+
+  /* ──── BANNER ──── */
+  .banner {
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .banner-blue   { background: var(--lblue);  border: 1px solid #bfdbfe; color: var(--navy); }
+  .banner-amber  { background: var(--lamber); border: 1.5px solid #fcd34d; color: #78350f; font-weight: 600; }
+  .banner-green  { background: var(--lgreen); border: 1.5px solid #86efac; color: #14532d; }
+  .banner-red    { background: var(--lred);   border: 1.5px solid #fca5a5; color: #7f1d1d; font-weight: 600; }
+  .banner-purple { background: var(--lpurple);border: 1.5px solid #c4b5fd; color: #5b21b6; }
+
+  /* ──── CONCEPT FLOW DIAGRAM ──── */
+  .flow-diagram {
+    background: linear-gradient(135deg, #1e293b 0%, #312e81 100%);
+    color: var(--white);
+    border-radius: 14px;
+    padding: 22px 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 8px 24px rgba(30,41,59,0.2);
+  }
+  .flow-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #c4b5fd;
+    margin-bottom: 16px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1.5px;
+  }
+  .flow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .flow-step {
+    background: rgba(124,58,237,0.18);
+    border: 1.5px solid rgba(196,181,253,0.4);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .flow-step-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .flow-step-text { flex: 1; min-width: 0; }
+  .flow-step-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 2px;
+  }
+  .flow-step-desc {
+    font-size: 11px;
+    color: #c4b5fd;
+    line-height: 1.55;
+  }
+  .flow-arrow {
+    text-align: center;
+    color: #c4b5fd;
+    font-size: 18px;
+    line-height: 0.5;
+  }
+
+  /* ──── FEATURE CARDS ──── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .feature-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 12px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    border-top: 3px solid var(--blue);
+  }
+  .feature-card.purple-feat { border-top-color: var(--purple); }
+  .feature-icon { font-size: 24px; margin-bottom: 6px; }
+  .feature-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .feature-desc { font-size: 11px; color: var(--gray); line-height: 1.6; }
+
+  /* ──── PREREQ ROWS ──── */
+  .prereq-list { display: flex; flex-direction: column; gap: 10px; }
+  .prereq-row {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    display: flex;
+  }
+  .prereq-num {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .prereq-num.purple-num { background: var(--purple); }
+  .prereq-body { padding: 12px 14px; flex: 1; min-width: 0; }
+  .prereq-title-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+  .prereq-title { font-size: 14px; font-weight: 700; color: var(--navy); }
+  .prereq-badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+  .badge-red    { background: var(--lred);    color: var(--red);    border: 1px solid #fca5a5; }
+  .badge-amber  { background: var(--lamber);  color: var(--amber);  border: 1px solid #fcd34d; }
+  .badge-purple { background: var(--lpurple); color: var(--purple); border: 1px solid #c4b5fd; }
+  .prereq-desc { font-size: 12px; color: var(--gray); line-height: 1.65; }
+  .prereq-link {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 700;
+    border-bottom: 1px solid var(--blue);
+    padding-bottom: 1px;
+  }
+
+  /* ──── STEP CARDS ──── */
+  .step-list { display: flex; flex-direction: column; gap: 10px; }
+  .step-row {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    display: flex;
+  }
+  .step-num {
+    background: var(--blue);
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 800;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-num.navy-num   { background: var(--navy); }
+  .step-num.green-num  { background: var(--green); }
+  .step-num.purple-num { background: var(--purple); }
+  .step-num.orange-num { background: var(--orange); }
+  .step-text {
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--black);
+    line-height: 1.7;
+    flex: 1;
+    min-width: 0;
+  }
+  .step-text strong { color: var(--navy); }
+  .step-hint {
+    display: block;
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+  .step-tip {
+    display: block;
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: var(--lamber);
+    border-left: 3px solid var(--amber);
+    border-radius: 4px;
+    font-size: 11px;
+    color: #78350f;
+    line-height: 1.55;
+  }
+
+  /* Prompt example box */
+  .prompt-box {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11.5px;
+    line-height: 1.65;
+    border-left: 3px solid var(--purple);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .prompt-label {
+    font-size: 9px;
+    color: #c4b5fd;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+
+  /* ──── DEVICE NOTICE ──── */
+  .device-notice {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 1.5px solid #f59e0b;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .device-notice.purple-notice {
+    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+    border-color: var(--purple);
+  }
+  .device-notice.blue-notice {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-color: var(--blue);
+  }
+  .device-notice-icon { font-size: 22px; flex-shrink: 0; }
+  .device-notice-title { font-size: 13px; font-weight: 700; color: #78350f; margin-bottom: 4px; }
+  .device-notice.purple-notice .device-notice-title { color: #5b21b6; }
+  .device-notice.blue-notice .device-notice-title { color: var(--navy); }
+  .device-notice-text { font-size: 12px; color: #92400e; line-height: 1.6; }
+  .device-notice.purple-notice .device-notice-text { color: #6d28d9; }
+  .device-notice.blue-notice .device-notice-text { color: #1e3a5f; }
+
+  /* ──── URL BOX ──── */
+  .url-box {
+    background: var(--lgreen);
+    border: 1.5px solid #86efac;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .url-label {
+    font-size: 11px;
+    color: var(--green);
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+  }
+  .url-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--navy);
+    font-weight: 700;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  /* ──── TIPS ──── */
+  .tip-list { display: flex; flex-direction: column; gap: 10px; }
+  .tip-row {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    display: flex;
+    gap: 12px;
+  }
+  .tip-icon { font-size: 22px; flex-shrink: 0; }
+  .tip-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .tip-desc { font-size: 12px; color: var(--gray); line-height: 1.65; }
+
+  /* ──── FAQ ──── */
+  .faq-list { display: flex; flex-direction: column; gap: 8px; }
+  .faq-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .faq-question {
+    width: 100%;
+    background: var(--white);
+    border: none;
+    padding: 14px 16px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .faq-question:hover { background: var(--lgray); }
+  .faq-q-icon {
+    color: var(--red);
+    font-weight: 800;
+    font-size: 14px;
+    font-family: 'DM Mono', monospace;
+    flex-shrink: 0;
+  }
+  .faq-q-text {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.5;
+  }
+  .faq-toggle {
+    color: var(--gray);
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: transform 0.25s;
+  }
+  .faq-item.is-open .faq-toggle { transform: rotate(180deg); }
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: var(--lgray);
+  }
+  .faq-item.is-open .faq-answer { max-height: 800px; }
+  .faq-answer-inner {
+    padding: 14px 16px;
+    font-size: 12.5px;
+    color: var(--black);
+    line-height: 1.75;
+    border-top: 1px solid var(--border);
+  }
+  .faq-answer-inner strong { color: var(--navy); }
+  .faq-answer-inner ol,
+  .faq-answer-inner ul {
+    padding-left: 20px;
+    margin: 6px 0;
+  }
+  .faq-answer-inner li { margin-bottom: 4px; }
+
+  /* ──── CTA ──── */
+  .cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: var(--navy);
+    color: var(--white);
+    text-decoration: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-top: 10px;
+    transition: background 0.15s, transform 0.15s;
+    box-shadow: 0 4px 12px rgba(30,58,95,0.25);
+  }
+  .cta-btn:active { transform: scale(0.97); }
+  .cta-btn.blue-btn { background: var(--blue); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+  .cta-btn.purple-btn { background: var(--purple); box-shadow: 0 4px 12px rgba(124,58,237,0.3); }
+
+  /* ──── SUMMARY ──── */
+  .summary-block {
+    background: linear-gradient(135deg, var(--navy) 0%, #5b21b6 100%);
+    color: var(--white);
+    border-radius: 14px;
+    padding: 24px 20px;
+    margin: 0 20px;
+  }
+  .summary-title {
+    font-size: 1.3rem;
+    font-weight: 900;
+    margin-bottom: 16px;
+    color: var(--white);
+  }
+  .summary-row {
+    background: rgba(22,45,74,0.6);
+    border: 1px solid rgba(196,181,253,0.25);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .summary-row.highlight {
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    border-color: #c4b5fd;
+  }
+  .summary-step-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #c4b5fd;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .summary-row.highlight .summary-step-label { color: var(--white); }
+  .summary-step-name {
+    font-size: 13px;
+    color: var(--white);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .summary-step-detail {
+    font-size: 11px;
+    color: #c7d2fe;
+    line-height: 1.55;
+  }
+  .summary-row.highlight .summary-step-detail { color: #ede9fe; }
+  .summary-footer {
+    margin-top: 14px;
+    font-size: 10px;
+    color: #94a3b8;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  /* ──── BACK TO TOP ──── */
+  .back-top {
+    text-align: center;
+    margin: 20px 20px 0;
+    padding: 14px;
+    background: var(--white);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    color: var(--gray);
+    font-size: 12px;
+  }
+  .back-top a {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .page-footer {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--gray);
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  /* ──── FLOATING TOC BUTTON ──── */
+  .toc-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: var(--white);
+    border: none;
+    box-shadow: 0 6px 18px rgba(124,58,237,0.5);
+    cursor: pointer;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+    transition: transform 0.2s;
+  }
+  .toc-btn:active { transform: scale(0.92); }
+  .toc-btn-icon { font-size: 22px; line-height: 1; }
+  .toc-btn-label {
+    font-size: 8px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .toc-btn.is-open { background: var(--navy); }
+  .toc-btn.is-open .toc-btn-icon::before { content: '✕'; }
+  .toc-btn:not(.is-open) .toc-btn-icon::before { content: '☰'; }
+
+  /* ──── TOC PANEL ──── */
+  .toc-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    z-index: 150;
+  }
+  .toc-overlay.is-open { opacity: 1; pointer-events: auto; }
+
+  .toc-panel {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    left: 20px;
+    max-width: 380px;
+    margin-left: auto;
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    z-index: 199;
+    overflow: hidden;
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    transform-origin: bottom right;
+  }
+  .toc-panel.is-open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .toc-header {
+    background: linear-gradient(90deg, var(--navy), #5b21b6);
+    color: var(--white);
+    padding: 14px 18px;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .toc-list {
+    list-style: none;
+    max-height: 65vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .toc-item { border-bottom: 1px solid var(--border); }
+  .toc-item:last-child { border-bottom: none; }
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 18px;
+    text-decoration: none;
+    color: var(--black);
+    transition: background 0.15s;
+  }
+  .toc-link:active { background: var(--lblue); }
+  .toc-link:hover { background: var(--lgray); }
+  .toc-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--lblue);
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    flex-shrink: 0;
+  }
+  .toc-num.purple-tn { background: var(--lpurple); color: var(--purple); }
+  .toc-text {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 380px) {
+    .hero { padding: 40px 18px 36px; }
+    .hero h1 { font-size: 1.55rem; }
+    .section { padding: 28px 16px 8px; }
+    .summary-block { margin: 0 16px; }
+    .quicklinks { padding: 20px 16px 0; }
+  }
+
+  @media (min-width: 720px) {
+    .hero { border-radius: 0 0 20px 20px; }
+    .toc-btn { right: max(20px, calc((100vw - 720px) / 2 + 20px)); }
+    .toc-panel { right: max(20px, calc((100vw - 720px) / 2 + 20px)); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <a href="./index.html" class="home-link">← 文殊の会 トップへ戻る</a>
+
+  <!-- HERO -->
+  <header class="hero" id="top">
+    <div class="hero-icon-row">
+      📱<span class="hero-icon-x">×</span>🤖<span class="hero-icon-x">×</span>🐙
+    </div>
+    <div class="hero-badge">iPhone × Claude Code × GitHub</div>
+    <h1>iPhoneだけで運用する<br>AI自動Web公開ガイド</h1>
+    <p class="hero-sub">
+      Claude Code に話しかけるだけで、Webページの<br>
+      <strong style="color:#fff;">編集・更新・追加・公開</strong> をiPhone完結で自動化
+    </p>
+    <div class="hero-pills">
+      <div class="hero-pill purple-pill">🤖 Claude Code連携</div>
+      <div class="hero-pill">📱 iPhone完結</div>
+      <div class="hero-pill">⚡ 自動デプロイ</div>
+    </div>
+  </header>
+
+  <!-- QUICK LINKS -->
+  <div class="quicklinks">
+    <div class="quicklinks-title">▼ 公式リンク・ダウンロード</div>
+    <div class="qlink-grid">
+      <a href="https://apps.apple.com/jp/app/claude/id6473753684" target="_blank" rel="noopener" class="qlink purple-q">
+        <div class="qlink-icon">🤖</div>
+        <div class="qlink-content">
+          <div class="qlink-label">APP STORE</div>
+          <div class="qlink-name">Claude iOSアプリ</div>
+        </div>
+        <div class="qlink-arrow">→</div>
+      </a>
+      <a href="https://docs.claude.com/en/docs/claude-code/overview" target="_blank" rel="noopener" class="qlink purple-q">
+        <div class="qlink-icon">📚</div>
+        <div class="qlink-content">
+          <div class="qlink-label">DOCS</div>
+          <div class="qlink-name">Claude Code 公式</div>
+        </div>
+        <div class="qlink-arrow">→</div>
+      </a>
+      <a href="https://apps.apple.com/jp/app/github/id1477376905" target="_blank" rel="noopener" class="qlink">
+        <div class="qlink-icon">📲</div>
+        <div class="qlink-content">
+          <div class="qlink-label">APP STORE</div>
+          <div class="qlink-name">GitHub iOSアプリ</div>
+        </div>
+        <div class="qlink-arrow">→</div>
+      </a>
+      <a href="https://github.com/signup" target="_blank" rel="noopener" class="qlink">
+        <div class="qlink-icon">✏️</div>
+        <div class="qlink-content">
+          <div class="qlink-label">SIGN UP</div>
+          <div class="qlink-name">GitHub 新規登録</div>
+        </div>
+        <div class="qlink-arrow">→</div>
+      </a>
+      <a href="https://claude.com/" target="_blank" rel="noopener" class="qlink purple-q">
+        <div class="qlink-icon">🌐</div>
+        <div class="qlink-content">
+          <div class="qlink-label">OFFICIAL</div>
+          <div class="qlink-name">Claude 公式サイト</div>
+        </div>
+        <div class="qlink-arrow">→</div>
+      </a>
+      <a href="https://docs.github.com/ja/pages" target="_blank" rel="noopener" class="qlink">
+        <div class="qlink-icon">🐙</div>
+        <div class="qlink-content">
+          <div class="qlink-label">DOCS</div>
+          <div class="qlink-name">GitHub Pages 公式</div>
+        </div>
+        <div class="qlink-arrow">→</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- WHAT THIS MANUAL ACHIEVES -->
+  <section class="section" id="vision">
+    <span class="section-tag purple-tag">🎯 GOAL</span>
+    <h2 class="section-title">このガイドで実現すること</h2>
+    <p class="section-desc">単なるWeb公開ではなく、<strong>AI（Claude Code）を相棒にしたiPhone完結のWebサイト運用</strong>を実現します。</p>
+
+    <div class="flow-diagram">
+      <div class="flow-title">▼ 完成する運用フロー</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-step-icon">🗣</div>
+          <div class="flow-step-text">
+            <div class="flow-step-name">iPhoneのClaudeアプリに話しかける</div>
+            <div class="flow-step-desc">「ヘッダー画像を変えて」「お問い合わせページ追加して」など</div>
+          </div>
+        </div>
+        <div class="flow-arrow">▼</div>
+        <div class="flow-step">
+          <div class="flow-step-icon">🤖</div>
+          <div class="flow-step-text">
+            <div class="flow-step-name">Claude CodeがHTMLを編集</div>
+            <div class="flow-step-desc">指示通りにファイルを編集・追加・修正</div>
+          </div>
+        </div>
+        <div class="flow-arrow">▼</div>
+        <div class="flow-step">
+          <div class="flow-step-icon">🐙</div>
+          <div class="flow-step-text">
+            <div class="flow-step-name">GitHubに自動コミット&amp;プッシュ</div>
+            <div class="flow-step-desc">Claude Codeがそのまま反映</div>
+          </div>
+        </div>
+        <div class="flow-arrow">▼</div>
+        <div class="flow-step">
+          <div class="flow-step-icon">🌐</div>
+          <div class="flow-step-text">
+            <div class="flow-step-name">数分でWebに自動デプロイ</div>
+            <div class="flow-step-desc">GitHub Pagesが公開URLに反映</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="banner banner-purple">
+      💎 <strong>このスキームの真価</strong><br>
+      コードを書けなくても、iPhoneでChatのように指示するだけで、<strong>本格的なWebサイトの編集・更新・追加・デプロイが完結</strong>します。
+    </div>
+  </section>
+
+  <!-- WHAT IS CLAUDE CODE -->
+  <section class="section" id="claudecode">
+    <span class="section-tag purple-tag">🤖 ABOUT</span>
+    <h2 class="section-title">Claude Code とは？</h2>
+    <p class="section-desc">Anthropic社のAI「Claude」を使って、コードの編集・実行・Git操作までを一貫して行えるAIコーディングツールです。</p>
+
+    <div class="feature-grid">
+      <div class="feature-card purple-feat">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">対話で操作</div>
+        <div class="feature-desc">日本語で指示するだけ</div>
+      </div>
+      <div class="feature-card purple-feat">
+        <div class="feature-icon">📝</div>
+        <div class="feature-title">ファイル編集</div>
+        <div class="feature-desc">HTMLを直接書き換え</div>
+      </div>
+      <div class="feature-card purple-feat">
+        <div class="feature-icon">🔀</div>
+        <div class="feature-title">Git連携</div>
+        <div class="feature-desc">コミット・プッシュ自動</div>
+      </div>
+      <div class="feature-card purple-feat">
+        <div class="feature-icon">📱</div>
+        <div class="feature-title">モバイル対応</div>
+        <div class="feature-desc">Claude iOSアプリで利用</div>
+      </div>
+    </div>
+
+    <div class="banner banner-purple">
+      💡 <strong>iPhone上での使い方</strong><br>
+      Claude公式iOSアプリから、Claude Codeのリモート実行機能を呼び出します。GitHubリポジトリを連携することで、iPhoneだけで編集→デプロイまで完結できます。
+    </div>
+
+    <div class="banner banner-amber">
+      ⚠️ <strong>機能の最新状況について</strong><br>
+      Claude Codeのモバイル/Web対応機能は急速に進化しています。最新の利用方法は公式ドキュメントを必ずご確認ください。
+    </div>
+
+    <a href="https://docs.claude.com/en/docs/claude-code/overview" target="_blank" rel="noopener" class="cta-btn purple-btn">
+      📚 Claude Code 公式ドキュメントを見る
+    </a>
+  </section>
+
+  <!-- PHASE 1 NOTICE -->
+  <section class="section" id="phases">
+    <span class="section-tag orange-tag">🗺 ROADMAP</span>
+    <h2 class="section-title">2つのフェーズで進めます</h2>
+    <p class="section-desc">最初に「土台」を整え、その後「Claude Codeでの運用」に移行します。</p>
+
+    <div class="device-notice blue-notice">
+      <div class="device-notice-icon">1️⃣</div>
+      <div>
+        <div class="device-notice-title">フェーズ1：基盤の構築（初回のみ）</div>
+        <div class="device-notice-text">
+          GitHubアカウント作成 → リポジトリ作成 → 初回HTMLアップロード → GitHub Pages有効化
+        </div>
+      </div>
+    </div>
+
+    <div class="device-notice purple-notice">
+      <div class="device-notice-icon">2️⃣</div>
+      <div>
+        <div class="device-notice-title">フェーズ2：Claude Code連携（以降ずっと）</div>
+        <div class="device-notice-text">
+          Claude iOSアプリにGitHubを連携 → 以降は<strong>iPhoneでClaudeに話しかけるだけ</strong>でWebが更新される運用へ
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PREREQUISITES -->
+  <section class="section" id="prerequisites">
+    <span class="section-tag">PREREQUISITES</span>
+    <h2 class="section-title">事前準備</h2>
+    <p class="section-desc">作業を始める前に、以下のものを準備してください。</p>
+
+    <div class="prereq-list">
+      <div class="prereq-row">
+        <div class="prereq-num">01</div>
+        <div class="prereq-body">
+          <div class="prereq-title-row">
+            <div class="prereq-title">GitHubアカウント</div>
+            <div class="prereq-badge badge-red">必須</div>
+          </div>
+          <div class="prereq-desc">github.com から無料で作成可能。</div>
+          <a href="https://github.com/signup" target="_blank" rel="noopener" class="prereq-link">▶ アカウント新規登録ページへ</a>
+        </div>
+      </div>
+      <div class="prereq-row">
+        <div class="prereq-num">02</div>
+        <div class="prereq-body">
+          <div class="prereq-title-row">
+            <div class="prereq-title">GitHubアプリ（iOS版）</div>
+            <div class="prereq-badge badge-red">必須</div>
+          </div>
+          <div class="prereq-desc">App Storeから無料インストール。リポジトリ作成と初回ファイルアップに使用。</div>
+          <a href="https://apps.apple.com/jp/app/github/id1477376905" target="_blank" rel="noopener" class="prereq-link">▶ App Storeで開く</a>
+        </div>
+      </div>
+      <div class="prereq-row">
+        <div class="prereq-num purple-num">03</div>
+        <div class="prereq-body">
+          <div class="prereq-title-row">
+            <div class="prereq-title">Claude iOSアプリ</div>
+            <div class="prereq-badge badge-purple">必須</div>
+          </div>
+          <div class="prereq-desc">Claude Code連携の中核となるアプリ。App Storeから無料インストール。</div>
+          <a href="https://apps.apple.com/jp/app/claude/id6473753684" target="_blank" rel="noopener" class="prereq-link">▶ App Storeで開く</a>
+        </div>
+      </div>
+      <div class="prereq-row">
+        <div class="prereq-num purple-num">04</div>
+        <div class="prereq-body">
+          <div class="prereq-title-row">
+            <div class="prereq-title">Claudeアカウント（有料プラン推奨）</div>
+            <div class="prereq-badge badge-amber">推奨</div>
+          </div>
+          <div class="prereq-desc">Claude Codeを安定して使うにはPro以上のプランが推奨されます。無料プランでも一部機能は利用可能。</div>
+        </div>
+      </div>
+      <div class="prereq-row">
+        <div class="prereq-num">05</div>
+        <div class="prereq-body">
+          <div class="prereq-title-row">
+            <div class="prereq-title">公開するHTMLファイル（初回用）</div>
+            <div class="prereq-badge badge-red">必須</div>
+          </div>
+          <div class="prereq-desc">ファイル名は「<strong>index.html</strong>」に。最小限のHTMLでOK（その後Claude Codeで肉付け可能）。</div>
+        </div>
+      </div>
+      <div class="prereq-row">
+        <div class="prereq-num">06</div>
+        <div class="prereq-body">
+          <div class="prereq-title-row">
+            <div class="prereq-title">Safari（iPhone標準ブラウザ）</div>
+            <div class="prereq-badge badge-red">必須</div>
+          </div>
+          <div class="prereq-desc">GitHub Pagesの有効化設定に使用。標準アプリでOK。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHASE 1 TITLE -->
+  <section class="section" id="phase1-title">
+    <span class="section-tag" style="background:#dbeafe; color:var(--blue);">PHASE 1 ／ 基盤の構築</span>
+    <h2 class="section-title">📦 初回セットアップ</h2>
+    <p class="section-desc">この3ステップは初回のみ。一度設定すれば、あとはClaude Codeで運用するだけです。</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="section" id="step1">
+    <span class="section-tag">STEP 1 / 3　📱 GitHubアプリ</span>
+    <h2 class="section-title">リポジトリを作成する</h2>
+    <p class="section-desc">iPhoneの「GitHubアプリ」を開いて、ファイルの保管場所を作ります。</p>
+
+    <div class="banner banner-blue">
+      💡 <strong>リポジトリとは？</strong><br>GitHubにおけるファイルの保管場所（フォルダのようなもの）です。
+    </div>
+
+    <div class="step-list">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-text">iPhoneで<strong>GitHubアプリ</strong>を起動してログイン</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-text">画面右上の<strong>「＋」アイコン</strong>をタップ</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-text">メニューから<strong>「New Repository」</strong>を選択</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-text">
+          リポジトリ名を入力
+          <span class="step-hint">例：my-website / portfolio / my-blog など</span>
+          <span class="step-tip">💡 半角英数字＋ハイフン（-）で命名。日本語・記号・スペースは使えません。</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">5</div>
+        <div class="step-text">
+          公開設定を<strong>「Public」</strong>に設定
+          <span class="step-tip">⚠️ 必ずPublic。Privateは無料プランでGitHub Pagesが使えません。</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">6</div>
+        <div class="step-text">
+          「Initialize with a README」のチェック<strong>はON</strong>のまま
+          <span class="step-hint">空リポジトリだとClaude Codeの初回連携でエラーになる場合があるため</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">7</div>
+        <div class="step-text"><strong>「Create Repository」</strong>をタップして完了</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="section" id="step2">
+    <span class="section-tag">STEP 2 / 3　📱 GitHubアプリ</span>
+    <h2 class="section-title">HTMLファイルをアップロードする</h2>
+    <p class="section-desc">作成したリポジトリに、最初のindex.htmlをアップします。<strong>このあとはClaude Codeが編集してくれる</strong>ので、最小限のHTMLでOK。</p>
+
+    <div class="banner banner-amber">
+      ⚠️ <strong>最重要ポイント</strong>：ファイル名は必ず「<strong>index.html</strong>」（半角・小文字）。
+    </div>
+
+    <div class="step-list">
+      <div class="step-row">
+        <div class="step-num green-num">1</div>
+        <div class="step-text">GitHubアプリで<strong>作成したリポジトリ</strong>を開く</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num green-num">2</div>
+        <div class="step-text">画面右上の<strong>「…」（その他メニュー）</strong>をタップ</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num green-num">3</div>
+        <div class="step-text">メニューから<strong>「Upload files」</strong>を選択</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num green-num">4</div>
+        <div class="step-text">
+          iPhoneの<strong>ファイルアプリ</strong>からHTMLファイルを選択
+          <span class="step-hint">iCloud Drive、ダウンロード等から選択可能</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num green-num">5</div>
+        <div class="step-text">
+          ファイル名が<strong>「index.html」</strong>になっているか確認
+          <span class="step-tip">⚠️ Index.html や INDEX.html はNG。半角小文字のみ。</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num green-num">6</div>
+        <div class="step-text"><strong>「Commit」</strong>をタップして保存完了</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="section" id="step3">
+    <span class="section-tag">STEP 3 / 3　📱 Safari</span>
+    <h2 class="section-title">GitHub Pages を有効化する</h2>
+    <p class="section-desc"><strong>iPhoneのSafariアプリ</strong>に切り替えて操作します。GitHubアプリでは設定画面が開けないためです。</p>
+
+    <div class="device-notice">
+      <div class="device-notice-icon">🔄</div>
+      <div>
+        <div class="device-notice-title">アプリを切り替えてください</div>
+        <div class="device-notice-text">
+          ここから先は<strong>iPhoneのSafari</strong>を使います。PCのブラウザは不要です。
+        </div>
+      </div>
+    </div>
+
+    <div class="step-list">
+      <div class="step-row">
+        <div class="step-num navy-num">1</div>
+        <div class="step-text">iPhoneで<strong>Safariアプリ</strong>を起動</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num navy-num">2</div>
+        <div class="step-text">アドレスバーに<strong>「github.com」</strong>と入力してアクセス</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num navy-num">3</div>
+        <div class="step-text">
+          ログインして対象のリポジトリを開く
+          <span class="step-tip">📱 横向きにすると見やすくなります。</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num navy-num">4</div>
+        <div class="step-text">
+          上部タブの<strong>「Settings」</strong>をタップ
+          <span class="step-tip">💡 見えない場合：上部タブを<strong>横にスワイプ</strong>。</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num navy-num">5</div>
+        <div class="step-text">画面を下にスクロールして左メニューの<strong>「Pages」</strong>を選択</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num navy-num">6</div>
+        <div class="step-text">「Branch」を<strong>「None」→「main」</strong>に変更</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num navy-num">7</div>
+        <div class="step-text">フォルダ選択は<strong>「/(root)」</strong>のまま</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num navy-num">8</div>
+        <div class="step-text"><strong>「Save」</strong>をタップして保存</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num navy-num">9</div>
+        <div class="step-text">
+          1〜2分後にページを更新すると<strong>公開URL</strong>が表示
+          <span class="step-tip">⏱ すぐ表示されない場合は1〜3分待ってからリロード。</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="url-box" style="margin-top:16px;">
+      <div class="url-label">▼ 発行されるURL</div>
+      <div class="url-text">https://[ユーザー名].github.io/[リポジトリ名]/</div>
+    </div>
+
+    <div class="banner banner-green" style="margin-top:16px;">
+      ✅ <strong>フェーズ1完了！</strong><br>
+      これで土台ができました。次のフェーズで<strong>Claude Codeを連携</strong>すれば、もう手動アップロードは不要です。
+    </div>
+  </section>
+
+  <!-- PHASE 2 TITLE -->
+  <section class="section" id="phase2-title">
+    <span class="section-tag purple-tag">PHASE 2 ／ Claude Code連携</span>
+    <h2 class="section-title">🤖 AI運用フェーズへ</h2>
+    <p class="section-desc">ここからが本番。Claude CodeとGitHubを連携して、<strong>iPhoneで話しかけるだけのWeb運用</strong>を実現します。</p>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="section" id="step4">
+    <span class="section-tag purple-tag">STEP 4　🤖 Claude iOSアプリ</span>
+    <h2 class="section-title">Claudeアプリをセットアップ</h2>
+    <p class="section-desc">Claude公式iOSアプリにログインして、Claude Code機能を有効化します。</p>
+
+    <div class="step-list">
+      <div class="step-row">
+        <div class="step-num purple-num">1</div>
+        <div class="step-text">
+          App Storeから<strong>Claude公式アプリ</strong>をインストール
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num purple-num">2</div>
+        <div class="step-text">
+          アプリを起動して<strong>Claudeアカウントでログイン</strong>
+          <span class="step-hint">アカウント未作成の場合はその場で作成可能</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num purple-num">3</div>
+        <div class="step-text">
+          設定（プロフィール）画面から<strong>Claude Code関連の機能</strong>を確認
+          <span class="step-tip">💡 機能名・表示位置はバージョンによって変わるため、最新情報は公式ドキュメントを参照してください。</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num purple-num">4</div>
+        <div class="step-text">
+          有料プラン（Pro以上）の利用を推奨
+          <span class="step-hint">Claude Codeの利用上限が大きく緩和されます</span>
+        </div>
+      </div>
+    </div>
+
+    <a href="https://docs.claude.com/en/docs/claude-code/overview" target="_blank" rel="noopener" class="cta-btn purple-btn">
+      📚 最新の利用方法を公式で確認
+    </a>
+  </section>
+
+  <!-- STEP 5 -->
+  <section class="section" id="step5">
+    <span class="section-tag purple-tag">STEP 5　🔗 GitHub連携</span>
+    <h2 class="section-title">GitHubリポジトリを連携</h2>
+    <p class="section-desc">Claude Codeに、フェーズ1で作ったGitHubリポジトリを連携させます。</p>
+
+    <div class="banner banner-purple">
+      💡 <strong>連携方法は2通り</strong><br>
+      ① Claudeアプリ内の<strong>GitHub Connector機能</strong>を使う（推奨）<br>
+      ② Claude Codeに<strong>リポジトリURLを直接共有</strong>して操作させる
+    </div>
+
+    <div class="step-list">
+      <div class="step-row">
+        <div class="step-num purple-num">1</div>
+        <div class="step-text">
+          Claudeアプリの設定から<strong>「Connectors」または「Integrations」</strong>を開く
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num purple-num">2</div>
+        <div class="step-text">
+          一覧から<strong>「GitHub」</strong>を選択して接続
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num purple-num">3</div>
+        <div class="step-text">
+          GitHubの認証画面が開くので、<strong>許可</strong>をタップ
+          <span class="step-hint">対象リポジトリへのアクセス権限を付与</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num purple-num">4</div>
+        <div class="step-text">
+          連携対象のリポジトリ（フェーズ1で作ったもの）を選択
+          <span class="step-tip">⚠️ 全リポジトリではなく、対象のものだけを選択することも可能。セキュリティのため推奨。</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num purple-num">5</div>
+        <div class="step-text">
+          連携完了。Claudeのチャット画面に戻る
+        </div>
+      </div>
+    </div>
+
+    <div class="banner banner-amber">
+      ⚠️ <strong>UIは変更される可能性があります</strong><br>
+      Connectors機能の名称・表示位置はアプリのバージョンによって異なります。見つからない場合は<a href="https://docs.claude.com/en/docs/claude-code/overview" target="_blank" rel="noopener" style="color:#78350f; font-weight:700;">公式ドキュメント</a>または<a href="https://support.claude.com" target="_blank" rel="noopener" style="color:#78350f; font-weight:700;">サポートページ</a>を参照。
+    </div>
+  </section>
+
+  <!-- STEP 6 -->
+  <section class="section" id="step6">
+    <span class="section-tag purple-tag">STEP 6　🗣 実際に運用してみる</span>
+    <h2 class="section-title">Claudeに話しかけて編集する</h2>
+    <p class="section-desc">連携が完了したら、あとは<strong>Claudeに話しかけるだけ</strong>。実際の指示例を紹介します。</p>
+
+    <div class="banner banner-purple">
+      ✨ <strong>魔法のような体験</strong><br>
+      コードを書かず、ファイル操作もせず、ただチャットするだけでWebサイトが更新されます。
+    </div>
+
+    <div class="step-list">
+      <div class="step-row">
+        <div class="step-num purple-num">📝</div>
+        <div class="step-text">
+          <strong>例1：ページを編集する</strong>
+          <div class="prompt-box"><div class="prompt-label">▼ Claudeへの指示例</div>GitHubの[リポジトリ名]の
+index.htmlを開いて、
+タイトルを「My Portfolio」に変更し、
+背景色をネイビーにして。
+変更後はそのままコミットして
+プッシュしてください。</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num purple-num">➕</div>
+        <div class="step-text">
+          <strong>例2：新しいページを追加</strong>
+          <div class="prompt-box"><div class="prompt-label">▼ Claudeへの指示例</div>about.html という自己紹介ページを
+新規作成して、index.htmlから
+リンクできるようにして。
+作成後はGitHubにプッシュ。</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num purple-num">🎨</div>
+        <div class="step-text">
+          <strong>例3：デザインを丸ごとリニューアル</strong>
+          <div class="prompt-box"><div class="prompt-label">▼ Claudeへの指示例</div>今のサイトをミニマルでモダンな
+デザインに刷新して。
+フォントは日本語の読みやすいものを使い、
+スマホでも見やすくして。
+完了したらコミット&amp;プッシュ。</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num purple-num">🐛</div>
+        <div class="step-text">
+          <strong>例4：エラーや不具合の修正</strong>
+          <div class="prompt-box"><div class="prompt-label">▼ Claudeへの指示例</div>公開ページで○○の表示がおかしい。
+原因を特定して修正してプッシュして。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="banner banner-green" style="margin-top:16px;">
+      ⚡ <strong>プッシュ後、数分でWebに反映</strong><br>
+      GitHub Pagesは自動的に最新のコミットを公開します。Claudeがプッシュした内容も、特別な操作なしに数分でWebサイトに反映されます。
+    </div>
+  </section>
+
+  <!-- BEST PRACTICES -->
+  <section class="section" id="bestpractices">
+    <span class="section-tag green-tag">💎 BEST PRACTICES</span>
+    <h2 class="section-title">運用のコツ</h2>
+    <p class="section-desc">Claude Code運用をスムーズにするための実践的なコツをまとめました。</p>
+
+    <div class="tip-list">
+      <div class="tip-row">
+        <div class="tip-icon">🎯</div>
+        <div>
+          <div class="tip-title">指示は具体的に</div>
+          <div class="tip-desc">「いい感じにして」より「ヘッダーを高さ80pxにして、ロゴを左、メニューを右に配置」と書くと精度が上がります。</div>
+        </div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-icon">🔍</div>
+        <div>
+          <div class="tip-title">変更前にプレビュー確認を依頼</div>
+          <div class="tip-desc">「コミット前にどう変わるか教えて」と頼めば、意図しない変更を防げます。</div>
+        </div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-icon">💾</div>
+        <div>
+          <div class="tip-title">大きな変更前にバックアップを依頼</div>
+          <div class="tip-desc">「念のため現在のindex.htmlをindex_backup.htmlとしてコピーしてからやって」と頼むと安心。</div>
+        </div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-icon">📝</div>
+        <div>
+          <div class="tip-title">コミットメッセージも任せる</div>
+          <div class="tip-desc">「変更内容に合わせて分かりやすいコミットメッセージを書いて」と指示すれば、履歴管理も自動。</div>
+        </div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-icon">↩️</div>
+        <div>
+          <div class="tip-title">困ったらロールバック</div>
+          <div class="tip-desc">「直前のコミットに戻して」「3つ前の状態に戻して」と頼めば、問題の変更を取り消せます。</div>
+        </div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-icon">🔄</div>
+        <div>
+          <div class="tip-title">反映が遅い時は待つ</div>
+          <div class="tip-desc">プッシュ後すぐは反映されません。1〜3分待ってからWebページをリロードしてください。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TROUBLESHOOTING -->
+  <section class="section" id="troubleshooting">
+    <span class="section-tag red-tag">🆘 TROUBLESHOOTING</span>
+    <h2 class="section-title">困ったときのQ&amp;A</h2>
+    <p class="section-desc">よくあるつまずきポイントと解決方法。タップで開閉します。</p>
+
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-icon">Q1</span>
+          <span class="faq-q-text">URLにアクセスしたら「404」エラーが出る</span>
+          <span class="faq-toggle">▼</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            最も多いトラブルです。順番に確認：
+            <ol>
+              <li><strong>ファイル名が「index.html」</strong>（半角小文字）か</li>
+              <li><strong>1〜3分待ったか</strong>（公開直後は反映に時間が）</li>
+              <li><strong>Branchが「main」</strong>か（Settings→Pages）</li>
+              <li><strong>リポジトリがPublic</strong>か</li>
+              <li>URLの末尾に <strong>「/」</strong> を付けてみる</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-icon">Q2</span>
+          <span class="faq-q-text">ClaudeアプリでGitHub連携メニューが見つからない</span>
+          <span class="faq-toggle">▼</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            アプリのバージョンや地域・プランによって表示が異なります：
+            <ul>
+              <li>Claudeアプリを<strong>最新版にアップデート</strong></li>
+              <li><strong>有料プラン</strong>でないと使えない機能の可能性</li>
+              <li>「Settings」→「Connectors」「Integrations」「Tools」など類似名称を探す</li>
+              <li>見つからなければ<strong>公式ドキュメント</strong>または<strong>サポート</strong>を確認</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-icon">Q3</span>
+          <span class="faq-q-text">Claudeに指示してもGitHubに変更が反映されない</span>
+          <span class="faq-toggle">▼</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            考えられる原因：
+            <ol>
+              <li><strong>連携が外れている</strong> → 設定画面で再連携</li>
+              <li><strong>権限不足</strong> → GitHub側で書き込み権限を許可</li>
+              <li><strong>コミット&amp;プッシュを明示していない</strong> → 「変更後にコミットしてプッシュして」と明確に指示</li>
+              <li><strong>対象リポジトリの指定漏れ</strong> → 「[ユーザー名]/[リポジトリ名]の～」と具体的に指定</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-icon">Q4</span>
+          <span class="faq-q-text">Claudeが意図しない変更をしてしまった</span>
+          <span class="faq-toggle">▼</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            すぐにロールバックしましょう：
+            <ul>
+              <li>Claudeに「<strong>直前のコミットを取り消して、その前の状態に戻して</strong>」と指示</li>
+              <li>または、GitHubアプリでリポジトリの「Commits」履歴から該当コミットをrevert</li>
+              <li>大きな変更前は「現在の状態をindex_backup.htmlにコピーしてから作業して」と依頼すると安全</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-icon">Q5</span>
+          <span class="faq-q-text">SafariでGitHubを開くと自動でアプリに飛んでしまう</span>
+          <span class="faq-toggle">▼</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            iPhoneがGitHubアプリを優先するために起こります：
+            <ul>
+              <li>Safariのアドレスバーに直接 <strong>github.com</strong> と打つ</li>
+              <li>リンクを長押し→「<strong>開く</strong>」を選択</li>
+              <li>アプリに飛んだ後、Safariに戻って再度アクセス</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-icon">Q6</span>
+          <span class="faq-q-text">「Settings」タブが見つからない</span>
+          <span class="faq-toggle">▼</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            iPhoneの画面が狭く隠れていることが多いです：
+            <ul>
+              <li>上部タブを<strong>左にスワイプ（横スクロール）</strong></li>
+              <li>iPhoneを<strong>横向き</strong>に</li>
+              <li>URLに直接 <strong>/settings/pages</strong> を追加</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-icon">Q7</span>
+          <span class="faq-q-text">Claude Codeの利用上限に達してしまった</span>
+          <span class="faq-toggle">▼</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            プランによって利用上限が異なります：
+            <ul>
+              <li>無料プランは厳しい制限あり → <strong>Pro以上のプラン</strong>を検討</li>
+              <li>上限到達時は時間経過で回復するのを待つ</li>
+              <li>大規模な変更は<strong>分割して指示</strong>すると消費を抑えられる</li>
+            </ul>
+            最新の上限・料金は<a href="https://claude.com/" target="_blank" rel="noopener" style="color:var(--blue); font-weight:700;">公式サイト</a>で確認してください。
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-icon">Q8</span>
+          <span class="faq-q-text">「main」というブランチが選択肢にない</span>
+          <span class="faq-toggle">▼</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            空のリポジトリだとmainブランチが作られていません：
+            <ol>
+              <li><strong>STEP 2に戻ってindex.htmlをアップ</strong></li>
+              <li>1ファイル以上Commitすると、自動的にmainブランチが生成</li>
+              <li>その後Settings→Pagesでmainを選択可能に</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-icon">Q9</span>
+          <span class="faq-q-text">Claudeにどう指示すればいいか分からない</span>
+          <span class="faq-toggle">▼</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            最初は<strong>Claude自身に聞く</strong>のがおすすめ：
+            <ul>
+              <li>「私のリポジトリ[名前]の現状を確認して、できることを提案して」</li>
+              <li>「○○したいんだけど、どんな指示を出せばいい？」</li>
+              <li>「このサイトの改善点を教えて」</li>
+            </ul>
+            Claudeが対話しながら、適切な指示の出し方を一緒に考えてくれます。
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-icon">Q10</span>
+          <span class="faq-q-text">公開を停止・サイトを削除したい</span>
+          <span class="faq-toggle">▼</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            <ul>
+              <li><strong>一時停止</strong>：Settings→Pages→Branchを「None」に</li>
+              <li><strong>完全削除</strong>：Settings→一番下の「Danger Zone」→「Delete this repository」</li>
+              <li>削除すると元に戻せないので注意</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <a href="https://docs.claude.com/en/docs/claude-code/overview" target="_blank" rel="noopener" class="cta-btn purple-btn">
+      📚 Claude Code 公式ドキュメント
+    </a>
+    <a href="https://docs.github.com/ja/pages" target="_blank" rel="noopener" class="cta-btn blue-btn">
+      📚 GitHub Pages 公式ドキュメント
+    </a>
+  </section>
+
+  <!-- SUMMARY -->
+  <section class="section" id="summary">
+    <span class="section-tag">SUMMARY</span>
+    <h2 class="section-title">まとめ</h2>
+    <p class="section-desc">iPhone × Claude Code × GitHub の運用フロー全体像。</p>
+  </section>
+
+  <div class="summary-block">
+    <div class="summary-title">🚀 完成するワークフロー</div>
+
+    <div class="summary-row">
+      <div class="summary-step-label">PHASE 1 ／ 初回のみ</div>
+      <div class="summary-step-name">基盤の構築</div>
+      <div class="summary-step-detail">GitHubでリポジトリ作成 → index.htmlアップ → Pages有効化</div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-step-label">PHASE 2 ／ STEP 4-5</div>
+      <div class="summary-step-name">Claude Code連携</div>
+      <div class="summary-step-detail">Claude iOSアプリ → GitHub Connector → リポジトリ連携</div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-step-label">PHASE 2 ／ STEP 6</div>
+      <div class="summary-step-name">日常運用（無限ループ）</div>
+      <div class="summary-step-detail">Claudeに指示 → 自動編集 → 自動コミット&amp;プッシュ → 自動デプロイ</div>
+    </div>
+
+    <div class="summary-row highlight">
+      <div class="summary-step-label">完成系</div>
+      <div class="summary-step-name">📱 iPhoneで話しかけるだけ</div>
+      <div class="summary-step-detail">コードを書かずに、Webサイトを編集・更新・追加・公開</div>
+    </div>
+
+    <div class="summary-footer">iPhone × Claude Code × GitHub Pages　完全自動化</div>
+  </div>
+
+  <!-- BACK TO TOP -->
+  <div class="back-top">
+    👆 <a href="#top">トップに戻る</a> ・ <a href="./index.html">🏠 文殊の会ホームへ</a>
+  </div>
+
+  <div class="page-footer">
+    iPhone × Claude Code × GitHub Pages 完全ガイド
+  </div>
+
+</div><!-- /container -->
+
+<!-- TOC OVERLAY -->
+<div class="toc-overlay" id="tocOverlay" onclick="closeToc()"></div>
+
+<!-- TOC PANEL -->
+<nav class="toc-panel" id="tocPanel" aria-label="目次">
+  <div class="toc-header">📖 目次</div>
+  <ul class="toc-list">
+    <li class="toc-item"><a href="#top" class="toc-link" onclick="closeToc()"><span class="toc-num">⌂</span><span class="toc-text">トップ</span></a></li>
+    <li class="toc-item"><a href="#vision" class="toc-link" onclick="closeToc()"><span class="toc-num purple-tn">🎯</span><span class="toc-text">このガイドで実現すること</span></a></li>
+    <li class="toc-item"><a href="#claudecode" class="toc-link" onclick="closeToc()"><span class="toc-num purple-tn">🤖</span><span class="toc-text">Claude Code とは？</span></a></li>
+    <li class="toc-item"><a href="#phases" class="toc-link" onclick="closeToc()"><span class="toc-num">🗺</span><span class="toc-text">2つのフェーズで進める</span></a></li>
+    <li class="toc-item"><a href="#prerequisites" class="toc-link" onclick="closeToc()"><span class="toc-num">📋</span><span class="toc-text">事前準備</span></a></li>
+    <li class="toc-item"><a href="#step1" class="toc-link" onclick="closeToc()"><span class="toc-num">01</span><span class="toc-text">STEP 1：リポジトリ作成</span></a></li>
+    <li class="toc-item"><a href="#step2" class="toc-link" onclick="closeToc()"><span class="toc-num">02</span><span class="toc-text">STEP 2：ファイルアップ</span></a></li>
+    <li class="toc-item"><a href="#step3" class="toc-link" onclick="closeToc()"><span class="toc-num">03</span><span class="toc-text">STEP 3：Pages 有効化</span></a></li>
+    <li class="toc-item"><a href="#step4" class="toc-link" onclick="closeToc()"><span class="toc-num purple-tn">04</span><span class="toc-text">STEP 4：Claudeアプリ準備</span></a></li>
+    <li class="toc-item"><a href="#step5" class="toc-link" onclick="closeToc()"><span class="toc-num purple-tn">05</span><span class="toc-text">STEP 5：GitHub連携</span></a></li>
+    <li class="toc-item"><a href="#step6" class="toc-link" onclick="closeToc()"><span class="toc-num purple-tn">06</span><span class="toc-text">STEP 6：実際に運用する</span></a></li>
+    <li class="toc-item"><a href="#bestpractices" class="toc-link" onclick="closeToc()"><span class="toc-num">💎</span><span class="toc-text">運用のコツ</span></a></li>
+    <li class="toc-item"><a href="#troubleshooting" class="toc-link" onclick="closeToc()"><span class="toc-num">🆘</span><span class="toc-text">困ったときのQ&amp;A</span></a></li>
+    <li class="toc-item"><a href="#summary" class="toc-link" onclick="closeToc()"><span class="toc-num">🚀</span><span class="toc-text">まとめ</span></a></li>
+  </ul>
+</nav>
+
+<!-- FLOATING TOC BUTTON -->
+<button class="toc-btn" id="tocBtn" onclick="toggleToc()" aria-label="目次を開く">
+  <span class="toc-btn-icon"></span>
+  <span class="toc-btn-label">MENU</span>
+</button>
+
+<script>
+  const tocBtn = document.getElementById('tocBtn');
+  const tocPanel = document.getElementById('tocPanel');
+  const tocOverlay = document.getElementById('tocOverlay');
+
+  function toggleToc() {
+    if (tocPanel.classList.contains('is-open')) closeToc();
+    else openToc();
+  }
+  function openToc() {
+    tocPanel.classList.add('is-open');
+    tocOverlay.classList.add('is-open');
+    tocBtn.classList.add('is-open');
+  }
+  function closeToc() {
+    tocPanel.classList.remove('is-open');
+    tocOverlay.classList.remove('is-open');
+    tocBtn.classList.remove('is-open');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeToc();
+  });
+
+  function toggleFaq(btn) {
+    btn.parentElement.classList.toggle('is-open');
+  }
+</script>
+
+</body>
+</html>
