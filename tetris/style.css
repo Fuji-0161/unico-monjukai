@@ -117,7 +117,7 @@ aside {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  width: 156px;   /* キャンバス120pxを中央配置できる幅に拡張 */
+  width: 164px;   /* キャンバス120pxを完全に内側に収める幅 */
 }
 
 .panel-block {
@@ -185,8 +185,9 @@ aside {
   margin: 8px auto 0;
   background: var(--bg-warm);
   border-radius: 12px;
-  border: 2px dashed var(--border);
   box-sizing: content-box;   /* 内部解像度120pxを縮ませない */
+  /* 二重枠を避けるためキャンバス自体のボーダーは外す
+     パネルブロック側の破線枠＋背景色の差で視覚的にフレームを表現 */
 }
 
 /* ホールド使用済みのときは少し薄く */
@@ -196,19 +197,18 @@ aside {
 
 /* ===== ハイスコア TOP3 ===== */
 .high-scores {
-  list-style: none;
   margin-top: 6px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
-.high-scores li {
+.hi-row {
   display: flex;
   align-items: center;
   gap: 8px;
   font-family: 'Fredoka', 'M PLUS Rounded 1c', sans-serif;
 }
-.high-scores .rank {
+.hi-row .rank {
   font-weight: 700;
   font-size: 0.6rem;
   letter-spacing: 0.04em;
@@ -217,18 +217,23 @@ aside {
   box-shadow: 0 2px 0 rgba(125,90,60,0.25);
   color: var(--text);
   flex-shrink: 0;
-  min-width: 32px;
+  min-width: 30px;
   text-align: center;
 }
 .rank-1 .rank { background: var(--gold); }
 .rank-2 .rank { background: var(--silver); }
 .rank-3 .rank { background: var(--bronze); color: #fff; }
-.high-scores .score {
+.hi-row .score {
   font-weight: 700;
   font-size: 0.9rem;
   color: var(--text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.high-scores li.is-new .score {
+.hi-row.is-new .score {
   color: var(--accent);
   animation: hi-score-glow 0.9s ease-in-out infinite;
 }

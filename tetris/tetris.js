@@ -84,7 +84,11 @@ function loadHighScores() {
 function saveHighScores(scores) {
   try {
     localStorage.setItem(HIGH_SCORE_STORAGE, JSON.stringify(scores));
-  } catch (_) {}
+    return true;
+  } catch (err) {
+    console.warn('[tetris] localStorage への保存に失敗:', err);
+    return false;
+  }
 }
 
 // ============================================================
@@ -559,20 +563,20 @@ class TetrisGame {
 
   /** ハイライト解除 */
   clearHighScoreHighlight() {
-    this.highScoresEl.querySelectorAll('li.is-new').forEach(li => li.classList.remove('is-new'));
+    this.highScoresEl.querySelectorAll('.hi-row.is-new').forEach(el => el.classList.remove('is-new'));
   }
 
   /** ハイスコア一覧を再描画。highlightIndex を渡すとその行を光らせる */
   updateHighScoresUI(highlightIndex = -1) {
-    const items = this.highScoresEl.querySelectorAll('li');
-    items.forEach((li, i) => {
-      const scoreSpan = li.querySelector('.score');
+    const items = this.highScoresEl.querySelectorAll('.hi-row');
+    items.forEach((el, i) => {
+      const scoreSpan = el.querySelector('.score');
       if (this.highScores[i] !== undefined) {
         scoreSpan.textContent = this.highScores[i].toLocaleString();
       } else {
         scoreSpan.textContent = '—';
       }
-      li.classList.toggle('is-new', i === highlightIndex);
+      el.classList.toggle('is-new', i === highlightIndex);
     });
   }
 

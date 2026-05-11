@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
   <a href="../index.html" class="home-back">← 文殊の会 トップへ戻る</a>
@@ -60,11 +60,11 @@
         </div>
         <div class="panel-block">
           <div class="label">TOP 3</div>
-          <ol class="high-scores" id="high-scores">
-            <li class="rank-1"><span class="rank">1ST</span><span class="score">—</span></li>
-            <li class="rank-2"><span class="rank">2ND</span><span class="score">—</span></li>
-            <li class="rank-3"><span class="rank">3RD</span><span class="score">—</span></li>
-          </ol>
+          <div class="high-scores" id="high-scores">
+            <div class="hi-row rank-1"><span class="rank">1ST</span><span class="score">—</span></div>
+            <div class="hi-row rank-2"><span class="rank">2ND</span><span class="score">—</span></div>
+            <div class="hi-row rank-3"><span class="rank">3RD</span><span class="score">—</span></div>
+          </div>
         </div>
         <div class="panel-block controls-info">
           <div class="label">CONTROLS</div>
@@ -78,6 +78,6 @@
     </main>
   </div>
 
-  <script src="tetris.js"></script>
+  <script src="tetris.js?v=3"></script>
 </body>
 </html>
