@@ -16,19 +16,19 @@ const GARBAGE_THRESHOLDS = [Infinity, 10, 8, 7, 6, 5, 4, 3, 2, 2, 1];
 const HIGH_SCORE_STORAGE = 'monju-tetris-high-scores-v1';
 const HIGH_SCORE_LIMIT   = 3;
 
-// フェルト風パステルカラー
+// より鮮やかなフェルト風カラー（参考デザインに準拠）
 const TETROMINOES = {
-  I: { color: '#a0d8e8', cells: [[1,0],[1,1],[1,2],[1,3]] },
-  O: { color: '#ffe4a3', cells: [[0,1],[0,2],[1,1],[1,2]] },
-  T: { color: '#d4b0e0', cells: [[0,1],[1,0],[1,1],[1,2]] },
-  S: { color: '#b5e0c0', cells: [[0,1],[0,2],[1,0],[1,1]] },
-  Z: { color: '#f7b8b8', cells: [[0,0],[0,1],[1,1],[1,2]] },
-  J: { color: '#b0c4e0', cells: [[0,0],[1,0],[1,1],[1,2]] },
-  L: { color: '#f5c89a', cells: [[0,2],[1,0],[1,1],[1,2]] },
+  I: { color: '#5b9bd5', cells: [[1,0],[1,1],[1,2],[1,3]] },
+  O: { color: '#ffc000', cells: [[0,1],[0,2],[1,1],[1,2]] },
+  T: { color: '#d946ef', cells: [[0,1],[1,0],[1,1],[1,2]] },
+  S: { color: '#10b981', cells: [[0,1],[0,2],[1,0],[1,1]] },
+  Z: { color: '#ef4444', cells: [[0,0],[0,1],[1,1],[1,2]] },
+  J: { color: '#3b82f6', cells: [[0,0],[1,0],[1,1],[1,2]] },
+  L: { color: '#f97316', cells: [[0,2],[1,0],[1,1],[1,2]] },
 };
 
 const TETROMINO_KEYS = Object.keys(TETROMINOES);
-const GARBAGE_COLOR  = '#d4c5b9';
+const GARBAGE_COLOR  = '#c9b5a0';
 
 const BG_COLOR       = '#fff8ee';
 const GRID_LINE      = 'rgba(168, 155, 140, 0.12)';
@@ -217,6 +217,12 @@ class AudioEngine {
     this.playTone(900, 'sine', 0.07, 0.08, 0.05);
   }
 
+  /** 一時停止/再開: ぽこっ */
+  playPause() {
+    this.playTone(660, 'triangle', 0.08, 0.10);
+    this.playTone(440, 'triangle', 0.08, 0.10, 0.07);
+  }
+
   /** ハイスコア更新: キラキラ祝福アルペジオ */
   playHighScore() {
     if (!this.ctx) return;
@@ -391,6 +397,7 @@ class TetrisGame {
     this.garbageAccum = 0;
     this.isRunning    = false;
     this.isGameOver   = false;
+    this.isPaused     = false;
     this.dropTimer    = null;
 
     this.highScores         = loadHighScores();
@@ -420,6 +427,7 @@ class TetrisGame {
     this.linesInLevel = 0;
     this.garbageAccum = 0;
     this.isGameOver   = false;
+    this.isPaused     = false;
     this.heldKey      = null;
     this.holdUsed     = false;
     this.nextKey      = randomKey();
@@ -622,6 +630,8 @@ class TetrisGame {
   handleKey(e) {
     if (e.code === 'Enter' && !this.isRunning) { this.start(); return; }
     if (!this.isRunning) return;
+    if (e.code === 'KeyP') { e.preventDefault(); this.togglePause(); return; }
+    if (this.isPaused) return;   // 一時停止中は他キーを無視
     switch (e.code) {
       case 'ArrowLeft':  e.preventDefault(); this.moveHorizontal(-1); break;
       case 'ArrowRight': e.preventDefault(); this.moveHorizontal(1);  break;
@@ -632,6 +642,32 @@ class TetrisGame {
       case 'ShiftLeft':
       case 'ShiftRight': e.preventDefault(); this.hold();             break;
     }
+  }
+
+  // ---- 一時停止 ----
+
+  togglePause() {
+    if (this.isGameOver) return;
+    if (this.isPaused) this.resume();
+    else               this.pause();
+  }
+
+  pause() {
+    if (!this.isRunning || this.isPaused) return;
+    this.isPaused = true;
+    clearInterval(this.dropTimer);
+    this.audio.stopBGM();
+    this.audio.playPause();
+    this.showOverlay('PAUSED', 'Press P to Resume');
+  }
+
+  resume() {
+    if (!this.isPaused) return;
+    this.isPaused = false;
+    this.hideOverlay();
+    this.startDropTimer();
+    this.audio.startBGM();
+    this.audio.playPause();
   }
 
   moveHorizontal(dc) {
@@ -692,22 +728,20 @@ class TetrisGame {
   // ---- 描画（フェルト風） ----
 
   /**
-   * フェルトピース1マスを描画（隣接認識あり）。
-   * neighbors の各方向に同一ピースのセルがある場合は、その辺の
-   * パディング・角丸・ステッチを省略して滑らかに連結させる。
+   * フェルトピース1マスを描画（隣接認識ありの連結シェイプ＋セル内ベベル）。
+   * 外周は丸み＋ステッチで一体感、内側は各セルに4方向ベベルを入れて
+   * クラシックなテトリス感（タイル感）を残す。
    */
   drawCell(ctx, x, y, color, size, neighbors) {
     const n = neighbors || { top: false, right: false, bottom: false, left: false };
     const baseR = size * 0.22;
     const PAD   = 2;
 
-    // 隣接側のパディングは 0（境界まで塗ってシームレスに接続）
     const pT = n.top    ? 0 : PAD;
     const pR = n.right  ? 0 : PAD;
     const pB = n.bottom ? 0 : PAD;
     const pL = n.left   ? 0 : PAD;
 
-    // 角丸：両隣どちらかでも隣接していたら 0
     const rTL = (n.top    || n.left)   ? 0 : baseR;
     const rTR = (n.top    || n.right)  ? 0 : baseR;
     const rBR = (n.bottom || n.right)  ? 0 : baseR;
@@ -716,28 +750,42 @@ class TetrisGame {
     const ix = x + pL,         iy = y + pT;
     const iw = size - pL - pR, ih = size - pT - pB;
 
-    // 本体
+    // 本体（連結後のシルエット）
     roundedRectPathCorners(ctx, ix, iy, iw, ih, rTL, rTR, rBR, rBL);
     ctx.fillStyle = color;
     ctx.fill();
 
-    // 上部ハイライト（上が外周のときのみ）
-    if (!n.top) {
-      const hH = ih * 0.36;
-      roundedRectPathCorners(ctx, ix + 3, iy + 3, iw - 6, hH, rTL * 0.65, rTR * 0.65, 0, 0);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
-      ctx.fill();
-    }
+    // 各セルに4方向ベベルを描き、外周シェイプにクリップ
+    ctx.save();
+    roundedRectPathCorners(ctx, ix, iy, iw, ih, rTL, rTR, rBR, rBL);
+    ctx.clip();
 
-    // 下部シャドウ（下が外周のときのみ）
-    if (!n.bottom) {
-      const sH = ih * 0.32;
-      roundedRectPathCorners(ctx, ix + 3, iy + ih - sH - 2, iw - 6, sH, 0, 0, rBR * 0.55, rBL * 0.55);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.07)';
-      ctx.fill();
-    }
+    const bevW = Math.max(3, size * 0.18);
+    const lightT = 'rgba(255, 255, 255, 0.40)';   // 上
+    const lightL = 'rgba(255, 255, 255, 0.28)';   // 左
+    const darkB  = 'rgba(0, 0, 0, 0.22)';         // 下
+    const darkR  = 'rgba(0, 0, 0, 0.16)';         // 右
 
-    // ステッチ縁取り（外周エッジのみ、内部の継ぎ目は描かない）
+    // 上ベベル
+    ctx.fillStyle = lightT;
+    ctx.fillRect(x, y, size, bevW);
+    // 左ベベル
+    ctx.fillStyle = lightL;
+    ctx.fillRect(x, y, bevW, size);
+    // 下ベベル
+    ctx.fillStyle = darkB;
+    ctx.fillRect(x, y + size - bevW, size, bevW);
+    // 右ベベル
+    ctx.fillStyle = darkR;
+    ctx.fillRect(x + size - bevW, y, bevW, size);
+
+    // セル中央の薄い光沢
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.10)';
+    ctx.fillRect(x + bevW, y + bevW, size - bevW * 2, (size - bevW * 2) * 0.45);
+
+    ctx.restore();
+
+    // ステッチ縁取り（外周エッジのみ、内部は描かない）
     ctx.save();
     ctx.setLineDash([2.8, 2.2]);
     ctx.lineWidth = 1.3;
