@@ -71,6 +71,43 @@ function roundedRectPath(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
+/** 角ごとに半径を指定できる角丸矩形パス */
+function roundedRectPathCorners(ctx, x, y, w, h, rTL, rTR, rBR, rBL) {
+  const lim = Math.min(w/2, h/2);
+  const r1 = Math.min(rTL, lim);
+  const r2 = Math.min(rTR, lim);
+  const r3 = Math.min(rBR, lim);
+  const r4 = Math.min(rBL, lim);
+  ctx.beginPath();
+  ctx.moveTo(x + r1, y);
+  ctx.lineTo(x + w - r2, y);
+  if (r2 > 0) ctx.quadraticCurveTo(x + w, y, x + w, y + r2);
+  ctx.lineTo(x + w, y + h - r3);
+  if (r3 > 0) ctx.quadraticCurveTo(x + w, y + h, x + w - r3, y + h);
+  ctx.lineTo(x + r4, y + h);
+  if (r4 > 0) ctx.quadraticCurveTo(x, y + h, x, y + h - r4);
+  ctx.lineTo(x, y + r1);
+  if (r1 > 0) ctx.quadraticCurveTo(x, y, x + r1, y);
+  ctx.closePath();
+}
+
+/** [r,c] のセル配列から高速参照用 Set を作る */
+function buildCellSet(cells) {
+  const s = new Set();
+  for (const [r, c] of cells) s.add(`${r},${c}`);
+  return s;
+}
+
+/** Set 内で (r,c) の上下左右に同一ピースのセルがあるか判定 */
+function neighborsIn(r, c, set) {
+  return {
+    top:    set.has(`${r-1},${c}`),
+    right:  set.has(`${r},${c+1}`),
+    bottom: set.has(`${r+1},${c}`),
+    left:   set.has(`${r},${c-1}`),
+  };
+}
+
 function loadHighScores() {
   try {
     const raw = localStorage.getItem(HIGH_SCORE_STORAGE);
@@ -654,30 +691,101 @@ class TetrisGame {
 
   // ---- 描画（フェルト風） ----
 
-  drawCell(ctx, x, y, color, size) {
-    const m  = 2;
-    const r  = size * 0.22;
-    const ix = x + m,        iy = y + m;
-    const iw = size - m * 2, ih = size - m * 2;
+  /**
+   * フェルトピース1マスを描画（隣接認識あり）。
+   * neighbors の各方向に同一ピースのセルがある場合は、その辺の
+   * パディング・角丸・ステッチを省略して滑らかに連結させる。
+   */
+  drawCell(ctx, x, y, color, size, neighbors) {
+    const n = neighbors || { top: false, right: false, bottom: false, left: false };
+    const baseR = size * 0.22;
+    const PAD   = 2;
 
-    roundedRectPath(ctx, ix, iy, iw, ih, r);
+    // 隣接側のパディングは 0（境界まで塗ってシームレスに接続）
+    const pT = n.top    ? 0 : PAD;
+    const pR = n.right  ? 0 : PAD;
+    const pB = n.bottom ? 0 : PAD;
+    const pL = n.left   ? 0 : PAD;
+
+    // 角丸：両隣どちらかでも隣接していたら 0
+    const rTL = (n.top    || n.left)   ? 0 : baseR;
+    const rTR = (n.top    || n.right)  ? 0 : baseR;
+    const rBR = (n.bottom || n.right)  ? 0 : baseR;
+    const rBL = (n.bottom || n.left)   ? 0 : baseR;
+
+    const ix = x + pL,         iy = y + pT;
+    const iw = size - pL - pR, ih = size - pT - pB;
+
+    // 本体
+    roundedRectPathCorners(ctx, ix, iy, iw, ih, rTL, rTR, rBR, rBL);
     ctx.fillStyle = color;
     ctx.fill();
 
-    roundedRectPath(ctx, ix + 3, iy + 3, iw - 6, ih * 0.38, r * 0.65);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-    ctx.fill();
+    // 上部ハイライト（上が外周のときのみ）
+    if (!n.top) {
+      const hH = ih * 0.36;
+      roundedRectPathCorners(ctx, ix + 3, iy + 3, iw - 6, hH, rTL * 0.65, rTR * 0.65, 0, 0);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
+      ctx.fill();
+    }
 
-    roundedRectPath(ctx, ix + 3, iy + ih * 0.62, iw - 6, ih * 0.32, r * 0.55);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.07)';
-    ctx.fill();
+    // 下部シャドウ（下が外周のときのみ）
+    if (!n.bottom) {
+      const sH = ih * 0.32;
+      roundedRectPathCorners(ctx, ix + 3, iy + ih - sH - 2, iw - 6, sH, 0, 0, rBR * 0.55, rBL * 0.55);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.07)';
+      ctx.fill();
+    }
 
+    // ステッチ縁取り（外周エッジのみ、内部の継ぎ目は描かない）
     ctx.save();
     ctx.setLineDash([2.8, 2.2]);
     ctx.lineWidth = 1.3;
     ctx.strokeStyle = darken(color, 0.42);
-    roundedRectPath(ctx, ix + 1.5, iy + 1.5, iw - 3, ih - 3, Math.max(2, r - 1.5));
-    ctx.stroke();
+
+    const so = 0.9;
+    const cp = 1.5;
+
+    if (!n.top) {
+      const x1 = n.left  ? ix      : ix + rTL + cp;
+      const x2 = n.right ? ix + iw : ix + iw - rTR - cp;
+      if (x2 > x1) {
+        ctx.beginPath();
+        ctx.moveTo(x1, iy + so);
+        ctx.lineTo(x2, iy + so);
+        ctx.stroke();
+      }
+    }
+    if (!n.right) {
+      const y1 = n.top    ? iy      : iy + rTR + cp;
+      const y2 = n.bottom ? iy + ih : iy + ih - rBR - cp;
+      if (y2 > y1) {
+        ctx.beginPath();
+        ctx.moveTo(ix + iw - so, y1);
+        ctx.lineTo(ix + iw - so, y2);
+        ctx.stroke();
+      }
+    }
+    if (!n.bottom) {
+      const x1 = n.left  ? ix      : ix + rBL + cp;
+      const x2 = n.right ? ix + iw : ix + iw - rBR - cp;
+      if (x2 > x1) {
+        ctx.beginPath();
+        ctx.moveTo(x1, iy + ih - so);
+        ctx.lineTo(x2, iy + ih - so);
+        ctx.stroke();
+      }
+    }
+    if (!n.left) {
+      const y1 = n.top    ? iy      : iy + rTL + cp;
+      const y2 = n.bottom ? iy + ih : iy + ih - rBL - cp;
+      if (y2 > y1) {
+        ctx.beginPath();
+        ctx.moveTo(ix + so, y1);
+        ctx.lineTo(ix + so, y2);
+        ctx.stroke();
+      }
+    }
     ctx.restore();
   }
 
@@ -718,19 +826,39 @@ class TetrisGame {
       ctx.beginPath(); ctx.moveTo(c*CELL, 0); ctx.lineTo(c*CELL, H); ctx.stroke();
     }
 
-    for (let r = 0; r < ROWS; r++)
-      for (let c = 0; c < COLS; c++)
-        if (this.field[r][c]) this.drawCell(ctx, c*CELL, r*CELL, this.field[r][c], CELL);
+    // フィールド上の固定ブロック：同色の隣接セルを連結
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const color = this.field[r][c];
+        if (!color) continue;
+        const n = {
+          top:    r > 0        && this.field[r-1][c] === color,
+          right:  c < COLS - 1 && this.field[r][c+1] === color,
+          bottom: r < ROWS - 1 && this.field[r+1][c] === color,
+          left:   c > 0        && this.field[r][c-1] === color,
+        };
+        this.drawCell(ctx, c*CELL, r*CELL, color, CELL, n);
+      }
+    }
 
     if (!this.piece) return;
 
-    const ghost = this.getGhostCells();
+    // ゴースト：ピース内の隣接で連結
+    const ghost    = this.getGhostCells();
+    const ghostSet = buildCellSet(ghost);
     ctx.globalAlpha = 0.25;
-    for (const [r,c] of ghost) this.drawCell(ctx, c*CELL, r*CELL, this.piece.color, CELL);
+    for (const [r, c] of ghost) {
+      this.drawCell(ctx, c*CELL, r*CELL, this.piece.color, CELL, neighborsIn(r, c, ghostSet));
+    }
     ctx.globalAlpha = 1.0;
 
-    for (const [r,c] of this.piece.absoluteCells())
-      if (r >= 0) this.drawCell(ctx, c*CELL, r*CELL, this.piece.color, CELL);
+    // 現在のピース：ピース内の隣接で連結
+    const pieceCells = this.piece.absoluteCells();
+    const pieceSet   = buildCellSet(pieceCells);
+    for (const [r, c] of pieceCells) {
+      if (r < 0) continue;
+      this.drawCell(ctx, c*CELL, r*CELL, this.piece.color, CELL, neighborsIn(r, c, pieceSet));
+    }
   }
 
   /** ミニピース描画ヘルパー（NEXT/HOLD 共通） */
@@ -748,9 +876,12 @@ class TetrisGame {
     const sx = Math.floor((size-(maxC-minC+1)*NEXT_CELL)/2) - minC*NEXT_CELL;
     const sy = Math.floor((size-(maxR-minR+1)*NEXT_CELL)/2) - minR*NEXT_CELL;
 
+    const cellSet = buildCellSet(cells);
+
     if (dim) ctx.globalAlpha = 0.5;
-    for (const [r,c] of cells)
-      this.drawCell(ctx, sx+c*NEXT_CELL, sy+r*NEXT_CELL, def.color, NEXT_CELL);
+    for (const [r, c] of cells) {
+      this.drawCell(ctx, sx + c*NEXT_CELL, sy + r*NEXT_CELL, def.color, NEXT_CELL, neighborsIn(r, c, cellSet));
+    }
     ctx.globalAlpha = 1.0;
   }
 
