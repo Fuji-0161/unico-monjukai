@@ -13,18 +13,23 @@ const LEVEL_SPEEDS = [800, 650, 500, 380, 280, 200, 150, 110, 80, 60];
 const LINE_SCORES  = [0, 100, 300, 500, 800];
 const GARBAGE_THRESHOLDS = [Infinity, 10, 8, 7, 6, 5, 4, 3, 2, 2, 1];
 
+// フェルト風パステルカラー
 const TETROMINOES = {
-  I: { color: '#00e5ff', cells: [[1,0],[1,1],[1,2],[1,3]] },
-  O: { color: '#ffe600', cells: [[0,1],[0,2],[1,1],[1,2]] },
-  T: { color: '#cc00ff', cells: [[0,1],[1,0],[1,1],[1,2]] },
-  S: { color: '#00e676', cells: [[0,1],[0,2],[1,0],[1,1]] },
-  Z: { color: '#ff1744', cells: [[0,0],[0,1],[1,1],[1,2]] },
-  J: { color: '#2979ff', cells: [[0,0],[1,0],[1,1],[1,2]] },
-  L: { color: '#ff6d00', cells: [[0,2],[1,0],[1,1],[1,2]] },
+  I: { color: '#a0d8e8', cells: [[1,0],[1,1],[1,2],[1,3]] },
+  O: { color: '#ffe4a3', cells: [[0,1],[0,2],[1,1],[1,2]] },
+  T: { color: '#d4b0e0', cells: [[0,1],[1,0],[1,1],[1,2]] },
+  S: { color: '#b5e0c0', cells: [[0,1],[0,2],[1,0],[1,1]] },
+  Z: { color: '#f7b8b8', cells: [[0,0],[0,1],[1,1],[1,2]] },
+  J: { color: '#b0c4e0', cells: [[0,0],[1,0],[1,1],[1,2]] },
+  L: { color: '#f5c89a', cells: [[0,2],[1,0],[1,1],[1,2]] },
 };
 
 const TETROMINO_KEYS = Object.keys(TETROMINOES);
-const GARBAGE_COLOR  = '#444455';
+const GARBAGE_COLOR  = '#d4c5b9';
+
+const BG_COLOR       = '#fff8ee';   // 盤面の生成り色
+const GRID_LINE      = 'rgba(168, 155, 140, 0.12)';
+const STITCH_COLOR   = 'rgba(125, 90, 60, 0.35)';
 
 // ============================================================
 // ユーティリティ
@@ -38,9 +43,37 @@ function createField() {
   return Array.from({ length: ROWS }, () => Array(COLS).fill(null));
 }
 
+// 色を少し暗くして縁取りに使う
+function darken(hex, amount = 0.3) {
+  const m = hex.replace('#', '');
+  const r = parseInt(m.slice(0,2), 16);
+  const g = parseInt(m.slice(2,4), 16);
+  const b = parseInt(m.slice(4,6), 16);
+  const dr = Math.max(0, Math.floor(r * (1 - amount)));
+  const dg = Math.max(0, Math.floor(g * (1 - amount)));
+  const db = Math.max(0, Math.floor(b * (1 - amount)));
+  return `rgb(${dr},${dg},${db})`;
+}
+
+// roundRect ポリフィル
+function roundedRectPath(ctx, x, y, w, h, r) {
+  const rr = Math.min(r, w/2, h/2);
+  ctx.beginPath();
+  ctx.moveTo(x + rr, y);
+  ctx.lineTo(x + w - rr, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+  ctx.lineTo(x + w, y + h - rr);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+  ctx.lineTo(x + rr, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+  ctx.lineTo(x, y + rr);
+  ctx.quadraticCurveTo(x, y, x + rr, y);
+  ctx.closePath();
+}
+
 // ============================================================
-// AudioEngine
-// Web Audio API を使い、外部ファイルなしで全音を生成する。
+// AudioEngine （おもろ可愛い音）
+// Triangle 波中心、ベル＆音楽ボックス風
 // ============================================================
 
 class AudioEngine {
@@ -54,129 +87,192 @@ class AudioEngine {
     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
   }
 
+  /**
+   * 単音を再生する汎用ヘルパー
+   * @param {number} freq         基準周波数 (Hz)
+   * @param {string} type         波形 ('sine'|'triangle'|'square'|'sawtooth')
+   * @param {number} duration     秒
+   * @param {number} gainPeak     0〜1
+   * @param {number} startOffset  開始遅延 (秒)
+   * @param {number[]} freqRamp   [開始Hz, 終了Hz]（指数変化）
+   */
   playTone(freq, type, duration, gainPeak, startOffset = 0, freqRamp = null) {
     if (!this.ctx) return;
     const now = this.ctx.currentTime + startOffset;
 
-    const osc  = this.ctx.createOscillator();
-    osc.type   = type;
+    const osc = this.ctx.createOscillator();
+    osc.type  = type;
     osc.frequency.setValueAtTime(freqRamp ? freqRamp[0] : freq, now);
     if (freqRamp) {
-      osc.frequency.linearRampToValueAtTime(freqRamp[1], now + duration);
+      // exponentialRamp は 0 に到達不可なので max(終値, 0.01)
+      osc.frequency.exponentialRampToValueAtTime(Math.max(freqRamp[1], 0.01), now + duration);
     }
 
     const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(gainPeak, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(gainPeak, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
     osc.connect(gain);
     gain.connect(this.ctx.destination);
     osc.start(now);
-    osc.stop(now + duration);
+    osc.stop(now + duration + 0.02);
+  }
+
+  /** ベル音（基音＋オクターブ上） */
+  playBell(freq, duration, gainPeak, startOffset = 0) {
+    this.playTone(freq,     'triangle', duration,      gainPeak,        startOffset);
+    this.playTone(freq * 2, 'sine',     duration * 0.7, gainPeak * 0.4, startOffset);
   }
 
   // ---- 効果音 ----
 
+  /** 移動: 軽いポップ音 */
   playMove() {
-    this.playTone(440, 'square', 0.05, 0.08);
+    this.playTone(880, 'sine', 0.04, 0.10);
   }
 
+  /** 回転: 上がるピロン音 */
   playRotate() {
-    this.playTone(600, 'square', 0.07, 0.1);
+    this.playTone(0, 'triangle', 0.1, 0.14, 0, [700, 1100]);
   }
 
+  /** 固定: ふんわり「ぽとっ」 */
   playLock() {
-    this.playTone(0, 'square', 0.12, 0.15, 0, [220, 100]);
+    this.playTone(0, 'triangle', 0.12, 0.16, 0, [420, 220]);
+    this.playTone(180, 'sine', 0.08, 0.06, 0.04);
   }
 
+  /** ライン消去: ベル風きらきら */
   playClear(lines) {
     if (!this.ctx) return;
     if (lines === 4) {
-      [261, 329, 392, 523, 659].forEach((f, i) => {
-        this.playTone(f, 'sawtooth', 0.3, 0.2, i * 0.06);
+      // テトリス: ハッピーな上昇アルペジオ＋キラーン
+      [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((f, i) => {
+        this.playBell(f, 0.45, 0.18, i * 0.06);
       });
     } else {
-      const base = 300 + lines * 80;
-      this.playTone(base,       'sawtooth', 0.2, 0.2);
-      this.playTone(base * 1.5, 'sawtooth', 0.2, 0.15, 0.08);
+      const base = 523 + (lines - 1) * 65;
+      this.playBell(base,      0.35, 0.18);
+      this.playBell(base * 1.25, 0.35, 0.14, 0.06);
+      if (lines >= 2) this.playBell(base * 1.5, 0.35, 0.12, 0.12);
     }
   }
 
+  /** ハードドロップ: 「ヒュン→ぽてっ」 */
   playHardDrop() {
-    this.playTone(0, 'sawtooth', 0.15, 0.2, 0, [800, 200]);
+    this.playTone(0, 'triangle', 0.16, 0.18, 0, [800, 180]);
+    this.playTone(160, 'sine', 0.1, 0.12, 0.14);
   }
 
+  /** ガベージ追加: 「ぴょよよよん」（ビブラート風） */
   playGarbage() {
-    this.playTone(0, 'sawtooth', 0.3, 0.25, 0,    [150, 80]);
-    this.playTone(0, 'square',   0.3, 0.1,  0.05, [120, 60]);
+    if (!this.ctx) return;
+    // 警告のうにょん音
+    this.playTone(0, 'triangle', 0.5, 0.20, 0,    [330, 220]);
+    this.playTone(0, 'triangle', 0.5, 0.12, 0.06, [380, 260]);
+    // 軽くシャープな注意音
+    this.playTone(0, 'sine',     0.3, 0.08, 0.15, [660, 440]);
   }
 
+  /** ゲームオーバー: しょぼーん下降 */
   playGameOver() {
     if (!this.ctx) return;
-    [523, 440, 349, 261, 196].forEach((f, i) => {
-      this.playTone(f, 'sawtooth', 0.4, 0.2, i * 0.12);
+    const notes = [659.25, 587.33, 523.25, 466.16, 415.30, 369.99];
+    notes.forEach((f, i) => {
+      this.playTone(f, 'triangle', 0.45, 0.18, i * 0.14);
     });
+    // 最後にぽとっと
+    this.playTone(220, 'sine', 0.5, 0.12, notes.length * 0.14);
   }
 
-  // ---- BGM ----
+  // ---- BGM（音楽ボックス風 / Triangle波）----
 
   startBGM() {
     if (!this.ctx) return;
     this.stopBGM();
 
-    const BPM      = 160;
-    const BEAT     = 60 / BPM;
-    const NOTE_GAP = 0.02;
+    const BPM      = 140;
+    const BEAT     = 60 / BPM;     // 1拍 = 約0.428秒
+    const NOTE_GAP = 0.04;         // スタッカート感
 
     const N = {
-      E4:329.6, D4:293.7, C4:261.6, B3:246.9, A3:220.0,
-      G3:196.0, F3:174.6, E3:164.8, D3:146.8, C3:130.8,
-      A4:440.0, G4:392.0, F4:349.2, B4:493.9,
-      _: 0,
+      C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46,
+      G5: 783.99, A5: 880.00, B5: 987.77, C6: 1046.50,
+      D6: 1174.66,
+      G4: 392.00, A4: 440.00, B4: 493.88, F5s: 739.99,
+      _:    0,
     };
 
+    // ふわふわかわいい原曲メロディー [周波数, 拍数]
     const melody = [
-      [N.E4,2],[N.B3,1],[N.C4,1],[N.D4,2],[N.C4,1],[N.B3,1],
-      [N.A3,2],[N.A3,1],[N.C4,1],[N.E4,2],[N.D4,1],[N.C4,1],
-      [N.B3,3],[N.C4,1],[N.D4,2],[N.E4,2],
-      [N.C4,2],[N.A3,2],[N.A3,4],
-      [N._,1],[N.D4,2],[N.F4,1],[N.A4,2],[N.G4,1],[N.F4,1],
-      [N.E4,3],[N.C4,1],[N.E4,2],[N.D4,1],[N.C4,1],
-      [N.B3,2],[N.B3,1],[N.C4,1],[N.D4,2],[N.E4,2],
-      [N.C4,2],[N.A3,2],[N.A3,4],
+      // フレーズ1: 軽快な上昇
+      [N.G5,1],[N.E5,1],[N.G5,1],[N.E5,1],
+      [N.A5,1],[N.F5,1],[N.A5,1],[N.F5,1],
+      [N.G5,2],[N.E5,2],
+      [N.C5,3],[N._,1],
+      // フレーズ2: 下降ハッピー
+      [N.C6,2],[N.B5,1],[N.A5,1],
+      [N.G5,1],[N.F5,1],[N.E5,1],[N.D5,1],
+      [N.C5,2],[N.E5,2],
+      [N.G5,3],[N._,1],
+      // フレーズ3: 真ん中で揺れ
+      [N.E5,1],[N.F5,1],[N.G5,1],[N.A5,1],
+      [N.G5,1],[N.F5,1],[N.E5,1],[N.D5,1],
+      [N.C5,2],[N.E5,2],
+      [N.G5,3],[N._,1],
+      // フレーズ4: スキップして終わり
+      [N.E5,1],[N.D5,1],[N.C5,1],[N._,1],
+      [N.G5,1],[N.F5,1],[N.E5,1],[N._,1],
+      [N.D5,1],[N.E5,1],[N.F5,1],[N.G5,1],
+      [N.C5,3],[N._,1],
+    ];
+
+    // 低音ベース（控えめ）
+    const bass = [
+      [N.G4,4],[N.A4,4],[N.C5,4],[N.G4,4],
+      [N.A4,4],[N.G4,4],[N.C5,4],[N.G4,4],
+      [N.A4,4],[N.G4,4],[N.C5,4],[N.G4,4],
+      [N.A4,4],[N.G4,4],[N.F5s,4],[N.G4,4],
     ];
 
     this.bgm = { active: true, nodes: [], timer: null };
 
-    const scheduleLoop = (startTime) => {
-      if (!this.bgm || !this.bgm.active) return;
+    const schedulePart = (notes, startTime, gainPeak, waveType) => {
       let t = startTime;
-
-      for (const [freq, beats] of melody) {
+      for (const [freq, beats] of notes) {
         const dur = beats * BEAT;
         if (freq > 0) {
-          const osc  = this.ctx.createOscillator();
-          osc.type   = 'square';
+          const osc = this.ctx.createOscillator();
+          osc.type  = waveType;
           osc.frequency.setValueAtTime(freq, t);
 
           const gain = this.ctx.createGain();
-          gain.gain.setValueAtTime(0.06, t);
-          gain.gain.setValueAtTime(0.06, t + dur - NOTE_GAP);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+          gain.gain.setValueAtTime(0.0001, t);
+          gain.gain.exponentialRampToValueAtTime(gainPeak, t + 0.015);
+          gain.gain.setValueAtTime(gainPeak, t + dur - NOTE_GAP);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
 
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start(t);
-          osc.stop(t + dur);
+          osc.stop(t + dur + 0.02);
           this.bgm.nodes.push(osc, gain);
         }
         t += dur;
       }
+      return t;
+    };
 
-      const loopDuration = t - startTime;
+    const scheduleLoop = (startTime) => {
+      if (!this.bgm || !this.bgm.active) return;
+      const endMelody = schedulePart(melody, startTime, 0.07, 'triangle');
+      schedulePart(bass,   startTime, 0.04, 'sine');
+
+      const loopDuration = endMelody - startTime;
       this.bgm.timer = setTimeout(() => {
         scheduleLoop(startTime + loopDuration);
-      }, loopDuration * 1000 - 200);
+      }, loopDuration * 1000 - 250);
     };
 
     scheduleLoop(this.ctx.currentTime + 0.1);
@@ -445,18 +541,44 @@ class TetrisGame {
     }
   }
 
-  // ---- 描画 ----
+  // ---- 描画（フェルト風） ----
 
+  /**
+   * フェルトピース1マスを描画する。
+   *  1. 角丸の本体（指定color）
+   *  2. 上部ハイライト（白の薄い帯）
+   *  3. 下部シャドウ
+   *  4. ステッチ風の破線アウトライン
+   */
   drawCell(ctx, x, y, color, size) {
-    const m = 1;
+    const m  = 2;            // パディング
+    const r  = size * 0.22;  // 角丸半径
+    const ix = x + m,        iy = y + m;
+    const iw = size - m * 2, ih = size - m * 2;
+
+    // 本体
+    roundedRectPath(ctx, ix, iy, iw, ih, r);
     ctx.fillStyle = color;
-    ctx.fillRect(x+m, y+m, size-m*2, size-m*2);
-    ctx.fillStyle = 'rgba(255,255,255,0.25)';
-    ctx.fillRect(x+m, y+m, size-m*2, 3);
-    ctx.fillRect(x+m, y+m, 3, size-m*2);
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.fillRect(x+m, y+size-m-3, size-m*2, 3);
-    ctx.fillRect(x+size-m-3, y+m, 3, size-m*2);
+    ctx.fill();
+
+    // 上部ハイライト（白の薄い帯）
+    roundedRectPath(ctx, ix + 3, iy + 3, iw - 6, ih * 0.38, r * 0.65);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+    ctx.fill();
+
+    // 下部シャドウ（深みを出す）
+    roundedRectPath(ctx, ix + 3, iy + ih * 0.62, iw - 6, ih * 0.32, r * 0.55);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.07)';
+    ctx.fill();
+
+    // ステッチ風の破線アウトライン
+    ctx.save();
+    ctx.setLineDash([2.8, 2.2]);
+    ctx.lineWidth = 1.3;
+    ctx.strokeStyle = darken(color, 0.42);
+    roundedRectPath(ctx, ix + 1.5, iy + 1.5, iw - 3, ih - 3, Math.max(2, r - 1.5));
+    ctx.stroke();
+    ctx.restore();
   }
 
   getGhostCells() {
@@ -473,10 +595,24 @@ class TetrisGame {
     const ctx = this.boardCtx;
     const W = COLS * CELL, H = ROWS * CELL;
 
-    ctx.fillStyle = '#0d0d14';
+    // 生成り背景
+    ctx.fillStyle = BG_COLOR;
     ctx.fillRect(0, 0, W, H);
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+    // ふんわりドット
+    ctx.fillStyle = 'rgba(244, 168, 185, 0.08)';
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if ((r + c) % 2 === 0) {
+          ctx.beginPath();
+          ctx.arc(c*CELL + CELL/2, r*CELL + CELL/2, 1.5, 0, Math.PI*2);
+          ctx.fill();
+        }
+      }
+    }
+
+    // 控えめグリッド
+    ctx.strokeStyle = GRID_LINE;
     ctx.lineWidth = 1;
     for (let r = 0; r <= ROWS; r++) {
       ctx.beginPath(); ctx.moveTo(0, r*CELL); ctx.lineTo(W, r*CELL); ctx.stroke();
@@ -485,24 +621,27 @@ class TetrisGame {
       ctx.beginPath(); ctx.moveTo(c*CELL, 0); ctx.lineTo(c*CELL, H); ctx.stroke();
     }
 
+    // 固定済みブロック
     for (let r = 0; r < ROWS; r++)
       for (let c = 0; c < COLS; c++)
         if (this.field[r][c]) this.drawCell(ctx, c*CELL, r*CELL, this.field[r][c], CELL);
 
     if (!this.piece) return;
 
+    // ゴースト
     const ghost = this.getGhostCells();
-    ctx.globalAlpha = 0.2;
+    ctx.globalAlpha = 0.25;
     for (const [r,c] of ghost) this.drawCell(ctx, c*CELL, r*CELL, this.piece.color, CELL);
     ctx.globalAlpha = 1.0;
 
+    // 現在のピース
     for (const [r,c] of this.piece.absoluteCells())
       if (r >= 0) this.drawCell(ctx, c*CELL, r*CELL, this.piece.color, CELL);
   }
 
   drawNext() {
     const ctx = this.nextCtx, size = this.nextCanvas.width;
-    ctx.fillStyle = '#0d0d14';
+    ctx.fillStyle = BG_COLOR;
     ctx.fillRect(0, 0, size, size);
     if (!this.nextKey) return;
 
