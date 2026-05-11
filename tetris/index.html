@@ -20,8 +20,12 @@
     </header>
 
     <main id="game-area">
-      <!-- 左パネル: スコア情報 -->
+      <!-- 左パネル: スコア情報＋ホールド -->
       <aside id="panel-left">
+        <div class="panel-block">
+          <div class="label">HOLD</div>
+          <canvas id="hold-canvas" width="120" height="120"></canvas>
+        </div>
         <div class="panel-block">
           <div class="label">SCORE</div>
           <div class="value" id="score">0</div>
@@ -48,18 +52,27 @@
         </div>
       </div>
 
-      <!-- 右パネル: ネクストピース -->
+      <!-- 右パネル: ネクスト＋TOP3＋操作説明 -->
       <aside id="panel-right">
         <div class="panel-block">
           <div class="label">NEXT</div>
           <canvas id="next-canvas" width="120" height="120"></canvas>
         </div>
+        <div class="panel-block">
+          <div class="label">TOP 3</div>
+          <ol class="high-scores" id="high-scores">
+            <li class="rank-1"><span class="rank">1ST</span><span class="score">—</span></li>
+            <li class="rank-2"><span class="rank">2ND</span><span class="score">—</span></li>
+            <li class="rank-3"><span class="rank">3RD</span><span class="score">—</span></li>
+          </ol>
+        </div>
         <div class="panel-block controls-info">
           <div class="label">CONTROLS</div>
           <div class="control-item"><span class="key">←→</span> Move</div>
-          <div class="control-item"><span class="key">↓</span> Soft Drop</div>
+          <div class="control-item"><span class="key">↓</span> Soft</div>
           <div class="control-item"><span class="key">↑</span> Rotate</div>
-          <div class="control-item"><span class="key">SPC</span> Hard Drop</div>
+          <div class="control-item"><span class="key">SPC</span> Drop</div>
+          <div class="control-item"><span class="key">C</span> Hold</div>
         </div>
       </aside>
     </main>
