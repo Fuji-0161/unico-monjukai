@@ -16,22 +16,23 @@ const GARBAGE_THRESHOLDS = [Infinity, 10, 8, 7, 6, 5, 4, 3, 2, 2, 1];
 const HIGH_SCORE_STORAGE = 'monju-tetris-high-scores-v1';
 const HIGH_SCORE_LIMIT   = 3;
 
-// より鮮やかなフェルト風カラー（参考デザインに準拠）
+// スタイリッシュ寄りのテトリミノカラー（サイト全体のパステル基調と調和）
 const TETROMINOES = {
-  I: { color: '#5b9bd5', cells: [[1,0],[1,1],[1,2],[1,3]] },
-  O: { color: '#ffc000', cells: [[0,1],[0,2],[1,1],[1,2]] },
-  T: { color: '#d946ef', cells: [[0,1],[1,0],[1,1],[1,2]] },
-  S: { color: '#10b981', cells: [[0,1],[0,2],[1,0],[1,1]] },
-  Z: { color: '#ef4444', cells: [[0,0],[0,1],[1,1],[1,2]] },
-  J: { color: '#3b82f6', cells: [[0,0],[1,0],[1,1],[1,2]] },
-  L: { color: '#f97316', cells: [[0,2],[1,0],[1,1],[1,2]] },
+  I: { color: '#5dade2', cells: [[1,0],[1,1],[1,2],[1,3]] },
+  O: { color: '#f5c84b', cells: [[0,1],[0,2],[1,1],[1,2]] },
+  T: { color: '#b87bd9', cells: [[0,1],[1,0],[1,1],[1,2]] },
+  S: { color: '#5cc395', cells: [[0,1],[0,2],[1,0],[1,1]] },
+  Z: { color: '#e57385', cells: [[0,0],[0,1],[1,1],[1,2]] },
+  J: { color: '#7c9ee3', cells: [[0,0],[1,0],[1,1],[1,2]] },
+  L: { color: '#f59563', cells: [[0,2],[1,0],[1,1],[1,2]] },
 };
 
 const TETROMINO_KEYS = Object.keys(TETROMINOES);
-const GARBAGE_COLOR  = '#c9b5a0';
+const GARBAGE_COLOR  = '#b8b3c2';
 
-const BG_COLOR       = '#fff8ee';
-const GRID_LINE      = 'rgba(168, 155, 140, 0.12)';
+const BG_COLOR       = '#ffffff';
+const BG_PANEL_COLOR = '#faf8fd';
+const GRID_LINE      = 'rgba(140, 110, 160, 0.10)';
 
 // ============================================================
 // ユーティリティ
@@ -787,23 +788,12 @@ class TetrisGame {
     ctx.fillStyle = BG_COLOR;
     ctx.fillRect(0, 0, W, H);
 
-    ctx.fillStyle = 'rgba(244, 168, 185, 0.08)';
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
-        if ((r + c) % 2 === 0) {
-          ctx.beginPath();
-          ctx.arc(c*CELL + CELL/2, r*CELL + CELL/2, 1.5, 0, Math.PI*2);
-          ctx.fill();
-        }
-      }
-    }
-
     ctx.strokeStyle = GRID_LINE;
     ctx.lineWidth = 1;
-    for (let r = 0; r <= ROWS; r++) {
+    for (let r = 1; r < ROWS; r++) {
       ctx.beginPath(); ctx.moveTo(0, r*CELL); ctx.lineTo(W, r*CELL); ctx.stroke();
     }
-    for (let c = 0; c <= COLS; c++) {
+    for (let c = 1; c < COLS; c++) {
       ctx.beginPath(); ctx.moveTo(c*CELL, 0); ctx.lineTo(c*CELL, H); ctx.stroke();
     }
 
@@ -845,7 +835,7 @@ class TetrisGame {
   /** ミニピース描画ヘルパー（NEXT/HOLD 共通） */
   drawMiniPiece(ctx, canvas, key, dim = false) {
     const size = canvas.width;
-    ctx.fillStyle = BG_COLOR;
+    ctx.fillStyle = BG_PANEL_COLOR;
     ctx.fillRect(0, 0, size, size);
     if (!key) return;
 

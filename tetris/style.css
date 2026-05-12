@@ -1,49 +1,49 @@
-/* ===== CSS Variables ===== */
+/* ===== CSS Variables (メインサイトのトーンに統一) ===== */
 :root {
-  --bg:           #fef5eb;
-  --bg-warm:      #fff8ee;
-  --surface:      #ffffff;
-  --border:       #e6cdb5;
-  --border-dark:  #c9a987;
-  --accent:       #f4a8b9;   /* dusty pink */
-  --accent2:      #a3d9b1;   /* mint */
-  --accent3:      #ffd8a8;   /* peach */
-  --gold:         #ffd166;
-  --silver:       #e0e0e0;
-  --bronze:       #d4a373;
-  --text:         #5d4e37;   /* warm brown */
-  --text-mid:     #8b7355;
-  --text-dim:     #b9a896;
+  --bg-grad-1:   #fde4ec;
+  --bg-grad-2:   #f3e8ff;
+  --bg-grad-3:   #e4edff;
 
-  /* フェルト調パステル テトリミノカラー */
-  --color-I: #a0d8e8;
-  --color-O: #ffe4a3;
-  --color-T: #d4b0e0;
-  --color-S: #b5e0c0;
-  --color-Z: #f7b8b8;
-  --color-J: #b0c4e0;
-  --color-L: #f5c89a;
-  --color-G: #d4c5b9;
+  --surface:     #ffffff;
+  --surface-2:   #faf8fd;
+  --border:      #ece3f0;
+  --border-mid:  #d8cfe0;
+
+  --text:        #3d3654;
+  --text-sub:    #5a527a;
+  --muted:       #8e87a5;
+
+  --accent:      #7c9ee3;   /* purple-blue */
+  --accent-bg:   #e8f1ff;
+  --pink:        #d96a8a;
+  --pink-bg:     #ffe6ec;
+  --green:       #5cb89a;
+  --green-bg:    #dcf5ea;
+  --gold:        #c59a30;
+  --gold-bg:     #fff3d0;
+  --gold-border: #ecc96a;
+
+  --silver:      #cfd3df;
+  --bronze:      #c9986a;
+
+  --shadow-sm:   0 2px 8px rgba(140, 110, 160, 0.08);
+  --shadow-md:   0 6px 20px rgba(140, 110, 160, 0.12);
 }
 
 /* ===== Reset ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: var(--bg);
+  background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 45%, var(--bg-grad-3) 100%);
+  background-attachment: fixed;
   color: var(--text);
-  font-family: 'M PLUS Rounded 1c', sans-serif;
-  font-weight: 500;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 400;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-image:
-    radial-gradient(circle at 25% 25%, rgba(244,168,185,0.18) 3px, transparent 4px),
-    radial-gradient(circle at 75% 75%, rgba(163,217,177,0.16) 3px, transparent 4px),
-    radial-gradient(circle at 50% 50%, rgba(176,196,224,0.14) 2px, transparent 3px);
-  background-size: 60px 60px, 60px 60px, 40px 40px;
 }
 
 /* ===== Home Back Link ===== */
@@ -52,27 +52,28 @@ body {
   top: 16px;
   left: 16px;
   z-index: 10;
-  font-family: 'M PLUS Rounded 1c', sans-serif;
-  font-weight: 700;
-  font-size: 0.8rem;
-  color: var(--text-mid);
+  font-family: 'DM Mono', monospace;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--text-sub);
   text-decoration: none;
-  padding: 8px 16px;
-  border: 2.5px dashed var(--border-dark);
+  padding: 9px 18px;
+  border: 1.5px solid var(--border);
   background: var(--surface);
   border-radius: 999px;
-  transition: all 0.2s;
-  box-shadow: 0 3px 0 var(--border-dark);
+  transition: transform 0.15s, box-shadow 0.15s, color 0.15s, border-color 0.15s;
+  box-shadow: var(--shadow-sm);
 }
 .home-back:hover {
   color: var(--accent);
   border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 0 var(--accent);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 .home-back:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 0 var(--accent);
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ===== App Layout ===== */
@@ -80,29 +81,19 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: 22px;
   position: relative;
   z-index: 1;
 }
 
 header h1 {
-  font-family: 'Fredoka', 'M PLUS Rounded 1c', sans-serif;
-  font-weight: 700;
-  font-size: 2.4rem;
-  letter-spacing: 0.18em;
-  color: var(--accent);
+  font-family: 'DM Mono', 'Noto Sans JP', monospace;
+  font-weight: 600;
+  font-size: 2rem;
+  letter-spacing: 0.32em;
+  color: var(--text);
   text-align: center;
-  text-shadow: 2px 2px 0 var(--surface), 3px 3px 0 var(--border-dark);
-}
-header h1::before {
-  content: '✿ ';
-  color: var(--accent2);
-  font-size: 0.8em;
-}
-header h1::after {
-  content: ' ✿';
-  color: var(--accent2);
-  font-size: 0.8em;
+  padding-left: 0.32em; /* letter-spacing 補正 */
 }
 
 /* ===== Game Area ===== */
@@ -117,87 +108,66 @@ aside {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  width: 164px;   /* キャンバス120pxを完全に内側に収める幅 */
+  width: 164px;
 }
 
 .panel-block {
   background: var(--surface);
-  border: 2.5px dashed var(--border-dark);
+  border: 1.5px solid var(--border);
   border-radius: 18px;
   padding: 14px 16px;
-  position: relative;
-  box-shadow: 0 4px 0 var(--border-dark), 0 6px 16px rgba(125,90,60,0.08);
-}
-
-/* ぽち（ボタン風アクセント） */
-.panel-block::before {
-  content: '';
-  position: absolute;
-  top: -7px;
-  right: 14px;
-  width: 14px;
-  height: 14px;
-  background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 0 2.5px var(--surface), 0 2px 0 var(--border-dark);
+  box-shadow: var(--shadow-sm);
 }
 
 .label {
-  font-family: 'Fredoka', 'M PLUS Rounded 1c', sans-serif;
+  font-family: 'DM Mono', monospace;
   font-weight: 700;
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
-  color: var(--text-mid);
-  margin-bottom: 6px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 8px;
   text-transform: uppercase;
 }
 
 .value {
-  font-family: 'Fredoka', 'M PLUS Rounded 1c', sans-serif;
-  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  font-weight: 600;
   font-size: 1.5rem;
   color: var(--text);
   word-break: break-all;
   transition: color 0.3s;
 }
 
-/* ハイスコア更新時の演出 */
+/* ハイスコア更新時のグロー */
 @keyframes hi-score-glow {
   0%, 100% {
-    color: var(--accent);
-    text-shadow: 0 0 8px var(--accent), 0 0 16px rgba(244,168,185,0.6);
-    transform: scale(1);
+    color: var(--pink);
+    text-shadow: 0 0 6px rgba(217, 106, 138, 0.5);
   }
   50% {
-    color: #f8b500;
-    text-shadow: 0 0 14px var(--gold), 0 0 24px var(--gold), 0 0 36px rgba(255,209,102,0.7);
-    transform: scale(1.05);
+    color: var(--gold);
+    text-shadow: 0 0 10px rgba(236, 201, 106, 0.7), 0 0 18px rgba(236, 201, 106, 0.4);
   }
 }
 .value.hi-score {
   animation: hi-score-glow 0.9s ease-in-out infinite;
 }
 
-/* HOLD / NEXT キャンバス（中央配置） */
+/* HOLD / NEXT キャンバス */
 #hold-canvas,
 #next-canvas {
   display: block;
-  margin: 8px auto 0;
-  background: var(--bg-warm);
-  border-radius: 12px;
-  box-sizing: content-box;   /* 内部解像度120pxを縮ませない */
-  /* 二重枠を避けるためキャンバス自体のボーダーは外す
-     パネルブロック側の破線枠＋背景色の差で視覚的にフレームを表現 */
+  margin: 6px auto 0;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  box-sizing: content-box;
 }
-
-/* ホールド使用済みのときは少し薄く */
-#hold-canvas.disabled {
-  opacity: 0.45;
-}
+#hold-canvas.disabled { opacity: 0.45; }
 
 /* ===== ハイスコア TOP3 ===== */
 .high-scores {
-  margin-top: 6px;
+  margin-top: 4px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -206,26 +176,25 @@ aside {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Fredoka', 'M PLUS Rounded 1c', sans-serif;
+  font-family: 'DM Mono', monospace;
 }
 .hi-row .rank {
   font-weight: 700;
-  font-size: 0.6rem;
-  letter-spacing: 0.04em;
-  padding: 2px 7px;
-  border-radius: 8px;
-  box-shadow: 0 2px 0 rgba(125,90,60,0.25);
-  color: var(--text);
+  font-size: 9px;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: #fff;
   flex-shrink: 0;
-  min-width: 30px;
+  min-width: 32px;
   text-align: center;
 }
-.rank-1 .rank { background: var(--gold); }
-.rank-2 .rank { background: var(--silver); }
-.rank-3 .rank { background: var(--bronze); color: #fff; }
+.rank-1 .rank { background: var(--gold-border); color: #6a4c10; }
+.rank-2 .rank { background: var(--silver);      color: #4a4f5d; }
+.rank-3 .rank { background: var(--bronze);      color: #fff;    }
 .hi-row .score {
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 0.85rem;
   color: var(--text);
   flex: 1;
   min-width: 0;
@@ -234,94 +203,86 @@ aside {
   white-space: nowrap;
 }
 .hi-row.is-new .score {
-  color: var(--accent);
   animation: hi-score-glow 0.9s ease-in-out infinite;
 }
 
 /* コントロール情報 */
 .controls-info { gap: 4px; }
 .control-item {
-  font-size: 0.78rem;
-  color: var(--text-mid);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 12px;
+  color: var(--text-sub);
   display: flex;
   align-items: center;
-  gap: 7px;
-  margin-top: 5px;
+  gap: 8px;
+  margin-top: 6px;
   font-weight: 500;
 }
 .key {
-  background: var(--accent3);
-  color: var(--text);
-  padding: 2px 8px;
-  font-family: 'Fredoka', sans-serif;
+  background: var(--accent-bg);
+  color: var(--accent);
+  padding: 3px 8px;
+  font-family: 'DM Mono', monospace;
   font-weight: 700;
-  font-size: 0.7rem;
-  border-radius: 8px;
-  min-width: 34px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  border-radius: 6px;
+  min-width: 36px;
   text-align: center;
-  box-shadow: 0 2px 0 rgba(125,90,60,0.25);
+  border: 1px solid #c7d7f3;
 }
 
 /* ===== Board Wrapper ===== */
 #board-wrapper {
   position: relative;
-  border: 3px dashed var(--border-dark);
-  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
   overflow: hidden;
-  background: var(--bg-warm);
-  box-shadow: 0 6px 0 var(--border-dark), 0 10px 24px rgba(125,90,60,0.10);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
 }
 
-#board {
-  display: block;
-}
+#board { display: block; }
 
 /* ===== Overlay ===== */
 .overlay {
   position: absolute;
   inset: 0;
-  background: rgba(254, 245, 235, 0.94);
+  background: rgba(253, 246, 248, 0.92);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
 }
-
 .overlay.active {
   opacity: 1;
   pointer-events: auto;
 }
 
-.overlay-content {
-  text-align: center;
-}
+.overlay-content { text-align: center; }
 
 .overlay-title {
-  font-family: 'Fredoka', 'M PLUS Rounded 1c', sans-serif;
-  font-weight: 700;
-  font-size: 2.2rem;
-  letter-spacing: 0.15em;
-  color: var(--accent);
-  text-shadow: 2px 2px 0 var(--surface), 3px 3px 0 var(--border-dark);
+  font-family: 'DM Mono', 'Noto Sans JP', monospace;
+  font-weight: 600;
+  font-size: 2rem;
+  letter-spacing: 0.32em;
+  color: var(--text);
+  padding-left: 0.32em;
   margin-bottom: 22px;
-  animation: bounce 1.4s ease-in-out infinite;
 }
 
 .overlay-sub {
-  font-family: 'M PLUS Rounded 1c', sans-serif;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: var(--text-mid);
-  letter-spacing: 0.1em;
-  animation: blink 1.2s step-end infinite;
-}
-
-/* ===== Animations ===== */
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-8px); }
+  font-family: 'DM Mono', monospace;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: blink 1.4s step-end infinite;
 }
 
 @keyframes blink {
@@ -331,10 +292,9 @@ aside {
 
 /* ===== Garbage Warning Flash ===== */
 @keyframes flash-pink {
-  0%   { box-shadow: 0 0 0 6px var(--accent), 0 6px 0 var(--border-dark), 0 10px 24px rgba(125,90,60,0.10); }
-  100% { box-shadow: 0 6px 0 var(--border-dark), 0 10px 24px rgba(125,90,60,0.10); }
+  0%   { box-shadow: 0 0 0 4px rgba(217, 106, 138, 0.55), var(--shadow-md); }
+  100% { box-shadow: var(--shadow-md); }
 }
-
 #board-wrapper.garbage-flash {
   animation: flash-pink 0.55s ease-out forwards;
 }
