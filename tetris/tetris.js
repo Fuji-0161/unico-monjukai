@@ -728,112 +728,45 @@ class TetrisGame {
   // ---- 描画（フェルト風） ----
 
   /**
-   * フェルトピース1マスを描画（隣接認識ありの連結シェイプ＋セル内ベベル）。
-   * 外周は丸み＋ステッチで一体感、内側は各セルに4方向ベベルを入れて
-   * クラシックなテトリス感（タイル感）を残す。
+   * テトリミノ1マスを描画。各セルは独立した角丸タイルとして描き、
+   * 4方向ベベル（上左=明 / 下右=暗）で立体感を出す。
+   * 連結はせず、隣接セル同士は1pxほどの隙間を残してタイル感を維持。
    */
-  drawCell(ctx, x, y, color, size, neighbors) {
-    const n = neighbors || { top: false, right: false, bottom: false, left: false };
-    const baseR = size * 0.22;
-    const PAD   = 2;
+  drawCell(ctx, x, y, color, size) {
+    const m  = 1;
+    const r  = size * 0.20;
+    const ix = x + m,        iy = y + m;
+    const iw = size - m * 2, ih = size - m * 2;
 
-    const pT = n.top    ? 0 : PAD;
-    const pR = n.right  ? 0 : PAD;
-    const pB = n.bottom ? 0 : PAD;
-    const pL = n.left   ? 0 : PAD;
-
-    const rTL = (n.top    || n.left)   ? 0 : baseR;
-    const rTR = (n.top    || n.right)  ? 0 : baseR;
-    const rBR = (n.bottom || n.right)  ? 0 : baseR;
-    const rBL = (n.bottom || n.left)   ? 0 : baseR;
-
-    const ix = x + pL,         iy = y + pT;
-    const iw = size - pL - pR, ih = size - pT - pB;
-
-    // 本体（連結後のシルエット）
-    roundedRectPathCorners(ctx, ix, iy, iw, ih, rTL, rTR, rBR, rBL);
+    // 本体
+    roundedRectPath(ctx, ix, iy, iw, ih, r);
     ctx.fillStyle = color;
     ctx.fill();
 
-    // 各セルに4方向ベベルを描き、外周シェイプにクリップ
+    // 4方向ベベル＋中央光沢（外形にクリップ）
     ctx.save();
-    roundedRectPathCorners(ctx, ix, iy, iw, ih, rTL, rTR, rBR, rBL);
+    roundedRectPath(ctx, ix, iy, iw, ih, r);
     ctx.clip();
 
-    const bevW = Math.max(3, size * 0.18);
-    const lightT = 'rgba(255, 255, 255, 0.40)';   // 上
-    const lightL = 'rgba(255, 255, 255, 0.28)';   // 左
-    const darkB  = 'rgba(0, 0, 0, 0.22)';         // 下
-    const darkR  = 'rgba(0, 0, 0, 0.16)';         // 右
+    const bevW = Math.max(2.5, size * 0.16);
 
-    // 上ベベル
-    ctx.fillStyle = lightT;
-    ctx.fillRect(x, y, size, bevW);
-    // 左ベベル
-    ctx.fillStyle = lightL;
-    ctx.fillRect(x, y, bevW, size);
-    // 下ベベル
-    ctx.fillStyle = darkB;
-    ctx.fillRect(x, y + size - bevW, size, bevW);
-    // 右ベベル
-    ctx.fillStyle = darkR;
-    ctx.fillRect(x + size - bevW, y, bevW, size);
+    // 上ベベル（明）
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
+    ctx.fillRect(ix, iy, iw, bevW);
+    // 左ベベル（明）
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.30)';
+    ctx.fillRect(ix, iy, bevW, ih);
+    // 下ベベル（暗）
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+    ctx.fillRect(ix, iy + ih - bevW, iw, bevW);
+    // 右ベベル（暗）
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.16)';
+    ctx.fillRect(ix + iw - bevW, iy, bevW, ih);
 
-    // セル中央の薄い光沢
+    // 中央上部の薄い光沢
     ctx.fillStyle = 'rgba(255, 255, 255, 0.10)';
-    ctx.fillRect(x + bevW, y + bevW, size - bevW * 2, (size - bevW * 2) * 0.45);
+    ctx.fillRect(ix + bevW, iy + bevW, iw - bevW * 2, (ih - bevW * 2) * 0.42);
 
-    ctx.restore();
-
-    // ステッチ縁取り（外周エッジのみ、内部は描かない）
-    ctx.save();
-    ctx.setLineDash([2.8, 2.2]);
-    ctx.lineWidth = 1.3;
-    ctx.strokeStyle = darken(color, 0.42);
-
-    const so = 0.9;
-    const cp = 1.5;
-
-    if (!n.top) {
-      const x1 = n.left  ? ix      : ix + rTL + cp;
-      const x2 = n.right ? ix + iw : ix + iw - rTR - cp;
-      if (x2 > x1) {
-        ctx.beginPath();
-        ctx.moveTo(x1, iy + so);
-        ctx.lineTo(x2, iy + so);
-        ctx.stroke();
-      }
-    }
-    if (!n.right) {
-      const y1 = n.top    ? iy      : iy + rTR + cp;
-      const y2 = n.bottom ? iy + ih : iy + ih - rBR - cp;
-      if (y2 > y1) {
-        ctx.beginPath();
-        ctx.moveTo(ix + iw - so, y1);
-        ctx.lineTo(ix + iw - so, y2);
-        ctx.stroke();
-      }
-    }
-    if (!n.bottom) {
-      const x1 = n.left  ? ix      : ix + rBL + cp;
-      const x2 = n.right ? ix + iw : ix + iw - rBR - cp;
-      if (x2 > x1) {
-        ctx.beginPath();
-        ctx.moveTo(x1, iy + ih - so);
-        ctx.lineTo(x2, iy + ih - so);
-        ctx.stroke();
-      }
-    }
-    if (!n.left) {
-      const y1 = n.top    ? iy      : iy + rTL + cp;
-      const y2 = n.bottom ? iy + ih : iy + ih - rBL - cp;
-      if (y2 > y1) {
-        ctx.beginPath();
-        ctx.moveTo(ix + so, y1);
-        ctx.lineTo(ix + so, y2);
-        ctx.stroke();
-      }
-    }
     ctx.restore();
   }
 
